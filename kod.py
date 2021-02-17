@@ -25,7 +25,7 @@ pygame.mixer.music.play(-1)
 # wyświetlanie okna gry
 pygame.display.set_caption("Przygody Pana Jeżyka")
 
-class obiekt:
+class object:
     def __init__(self, X, Y, Img, change):
         self.X = X
         self.Y = Y
@@ -34,7 +34,7 @@ class obiekt:
 
 #gracz (jeż)
 
-hedgehog = obiekt( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
+hedgehog = object( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
 
 hedgehog_speed = 0.3
 hedgehog_mul = 1.0
@@ -42,14 +42,10 @@ hedgehog_mul = 1.0
 
 
 # jablko
-appleImg = pygame.image.load("apple.png")
-#rozmiar 64x64
-appleX = [random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)]
-appleY = [-10, -110, -210]
-appleY_change = [0.2, 0.2, 0.2]
+apple = object([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-10, -110, -210], pygame.image.load("apple.png"), [0.2, 0.2, 0.2])
 
 # gruszka
-pear = obiekt(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 0.23)
+pear = object(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 0.23)
 
 #wynik
 score_val = 0
@@ -75,24 +71,23 @@ def hedgehog_move():
 
 def apple_m(X, Y, C, i):
 
-    global appleImg
+    global apple
 
-    draw(X[i], Y[i], appleImg)
+    draw(X[i], Y[i], apple.Img)
     Y[i] += C[i]
 
 def apple_move():
 
-    global appleY
-    global appleX
+    global apple
     global MAX_X
     global SCREEN_HEIGHT
 
     for i in range(3):
-        apple_m(appleX, appleY, appleY_change, i)
-        if appleY[i] > SCREEN_HEIGHT:
-            appleX[i] = random.randint(0, MAX_X)
-            appleY[i] = -10 + (i * -100)
-            apple_m(appleX, appleY, appleY_change, i)
+        apple_m(apple.X, apple.Y, apple.change, i)
+        if apple.Y[i] > SCREEN_HEIGHT:
+            apple.X[i] = random.randint(0, MAX_X)
+            apple.Y[i] = -10 + (i * -100)
+            apple_m(apple.X, apple.Y, apple.change, i)
 
 def pear_m(): 
     global pear
@@ -125,12 +120,11 @@ def get_speed():
 
 def get_point(i):
 
-    global appleX
-    global appleY
+    global apple
 
     global hedgehog
 
-    if hedgehog.X > appleX[i]-64 and hedgehog.X < appleX[i]+64 and appleY[i]+64-hedgehog.Y <= 64 and appleY[i]+64-hedgehog.Y > 0:
+    if hedgehog.X > apple.X[i]-64 and hedgehog.X < apple.X[i]+64 and apple.Y[i]+64-hedgehog.Y <= 64 and apple.Y[i]+64-hedgehog.Y > 0:
         return True
     else:
         return False
@@ -142,10 +136,7 @@ def start_the_game():
     global hedgehog_speed
     global hedgehog_mul
 
-    global appleX
-    global appleY
-    global appleX_change
-    global appleImg
+    global apple
 
     global pear
 
@@ -197,7 +188,7 @@ def start_the_game():
 
         for i in range(3):
             if get_point(i):
-                appleY[i] = SCREEN_HEIGHT + 1
+                apple.Y[i] = SCREEN_HEIGHT + 1
                 score_val += 1
 
         if counter == ready_pear:
