@@ -7,10 +7,16 @@ pygame.init()
 
 counter = 0
 
-# definiowanie okna gry
+#definiowanie okna gry
 SCREEN_HEIGHT = 720
 SCREEN_WIDTH = 1080
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+#rozmiar obrazków
+IMG_SIZE = 64
+
+#maxX
+MAX_X = SCREEN_WIDTH - IMG_SIZE
 
 #muzyka w tle
 mixer.music.load('AutumnDay.mp3')
@@ -27,14 +33,13 @@ class obiekt:
         self.change = change
 
 #gracz (jeż)
-IMG_SIZE = 64
+
 hedgehog = obiekt( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
 
 hedgehog_speed = 0.3
 hedgehog_mul = 1.0
 
-#maxX
-MAX_X = SCREEN_WIDTH - IMG_SIZE
+
 
 # jablko
 appleImg = pygame.image.load("apple.png")
