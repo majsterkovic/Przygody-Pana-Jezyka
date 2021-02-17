@@ -28,9 +28,7 @@ class obiekt:
 
 #gracz (jeż)
 IMG_SIZE = 64
-hedgehog = obiekt(SCREEN_WIDTH / 2 - (IMG_SIZE / 2), SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
-hedgehog.Img = pygame.image.load("hedgehog.png")
-
+hedgehog = obiekt( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
 
 hedgehog_speed = 0.3
 hedgehog_mul = 1.0
@@ -46,11 +44,7 @@ appleY = [-10, -110, -210]
 appleY_change = [0.2, 0.2, 0.2]
 
 # gruszka
-pearImg = pygame.image.load("pear.png")
-#rozmiar 64x64
-pearX = random.randint(0, MAX_X)
-pearY = -10
-pearY_change = 0.23
+pear = obiekt(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 0.23)
 
 #wynik
 score_val = 0
@@ -96,23 +90,19 @@ def apple_move():
             apple_m(appleX, appleY, appleY_change, i)
 
 def pear_m(): 
-    global pearX
-    global pearY
-    global pearY_change
-    global pearImg
-    draw(pearX, pearY, pearImg)
-    pearY += pearY_change
+    global pear
+    draw(pear.X, pear.Y, pear.Img)
+    pear.Y += pear.change
 
 def pear_move():
-    global pearY
-    global pearX
+    global pear
     global counter
     global SCREEN_HEIGHT
     pear_m()
-    if pearY > SCREEN_HEIGHT:
-        pearX = random.randint(0, MAX_X)
+    if pear.Y > SCREEN_HEIGHT:
+        pear.X = random.randint(0, MAX_X)
         counter = 0
-        pearY = -10
+        pear.Y = -10
         pear_m()
 
 
@@ -120,12 +110,10 @@ def draw(x, y, Img):
     screen.blit(Img, (x, y))
 
 def get_speed():
-    global pearX
-    global pearY
-
+    global pear
     global hedgehog
 
-    if hedgehog.X > pearX-64 and hedgehog.X < pearX+64 and pearY+64-hedgehog.Y <= 64 and pearY+64-hedgehog.Y > 0:
+    if hedgehog.X > pear.X-64 and hedgehog.X < pear.X+64 and pear.Y+64-hedgehog.Y <= 64 and pear.Y+64-hedgehog.Y > 0:
         return True
     else:
         return False
@@ -154,8 +142,7 @@ def start_the_game():
     global appleX_change
     global appleImg
 
-    global pearX
-    global pearY
+    global pear
 
     global score_val
     global SCREEN_HEIGHT
@@ -216,9 +203,9 @@ def start_the_game():
 
         if get_speed():
             hedgehog_mul += 0.015
-            pearY = SCREEN_HEIGHT + 1
-            pearY = -10
-            pearX = random.randint(0, MAX_X)
+            pear.Y = SCREEN_HEIGHT + 1
+            pear.Y = -10
+            pear.X = random.randint(0, MAX_X)
 
             counter = 0
             ready_pear = random.randint(7000, 30000)
