@@ -19,12 +19,19 @@ pygame.mixer.music.play(-1)
 # wyświetlanie okna gry
 pygame.display.set_caption("Przygody Pana Jeżyka")
 
+class obiekt:
+    def __init__(self, X, Y, Img, change):
+        self.X = X
+        self.Y = Y
+        self.Img = Img
+        self.change = change
+
 #gracz (jeż)
-hedgehogImg = pygame.image.load("hedgehog.png")
 IMG_SIZE = 64
-hedgehogX = SCREEN_WIDTH / 2 - (IMG_SIZE / 2)
-hedgehogY = SCREEN_HEIGHT - 120 - (IMG_SIZE / 2) #568
-hedgehogX_change = 0
+hedgehog = obiekt(SCREEN_WIDTH / 2 - (IMG_SIZE / 2), SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
+hedgehog.Img = pygame.image.load("hedgehog.png")
+
+
 hedgehog_speed = 0.3
 hedgehog_mul = 1.0
 
@@ -57,18 +64,15 @@ def show_score(x, y):
 
 def hedgehog_move():
     global MAX_X
-    global hedgehogX
-    global hedgehogY
-    global hedgehogX_change
-    global hedgehogImg
+    global hedgehog
 
-    hedgehogX += hedgehogX_change
+    hedgehog.X += hedgehog.change
         
-    if hedgehogX <= 0:
-        hedgehogX = 0
-    elif hedgehogX >= MAX_X:
-        hedgehogX = MAX_X
-    draw(hedgehogX, hedgehogY, hedgehogImg)
+    if hedgehog.X <= 0:
+        hedgehog.X = 0
+    elif hedgehog.X >= MAX_X:
+        hedgehog.X = MAX_X
+    draw(hedgehog.X, hedgehog.Y, hedgehog.Img)
 
 def apple_m(X, Y, C, i):
 
@@ -118,10 +122,10 @@ def draw(x, y, Img):
 def get_speed():
     global pearX
     global pearY
-    global hedgehogX
-    global hedgehogY
 
-    if hedgehogX > pearX-64 and hedgehogX < pearX+64 and pearY+64-hedgehogY <= 64 and pearY+64-hedgehogY > 0:
+    global hedgehog
+
+    if hedgehog.X > pearX-64 and hedgehog.X < pearX+64 and pearY+64-hedgehog.Y <= 64 and pearY+64-hedgehog.Y > 0:
         return True
     else:
         return False
@@ -130,10 +134,10 @@ def get_point(i):
 
     global appleX
     global appleY
-    global hedgehogX
-    global hedgehogY
 
-    if hedgehogX > appleX[i]-64 and hedgehogX < appleX[i]+64 and appleY[i]+64-hedgehogY <= 64 and appleY[i]+64-hedgehogY > 0:
+    global hedgehog
+
+    if hedgehog.X > appleX[i]-64 and hedgehog.X < appleX[i]+64 and appleY[i]+64-hedgehog.Y <= 64 and appleY[i]+64-hedgehog.Y > 0:
         return True
     else:
         return False
@@ -141,10 +145,7 @@ def get_point(i):
 
 def start_the_game():
 
-    global hedgehogX
-    global hedgehogY
-    global hedgehogX_change
-    global hedgehogImg
+    global hedgehog
     global hedgehog_speed
     global hedgehog_mul
 
@@ -181,21 +182,21 @@ def start_the_game():
             #klawisze
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    hedgehogX_change = -1 * hedgehog_speed* hedgehog_mul
-                    hedgehogImg = pygame.image.load("hedgehog_rev.png")
-                    screen.blit(hedgehogImg, (hedgehogX, hedgehogY))
+                    hedgehog.change = -1 * hedgehog_speed* hedgehog_mul
+                    hedgehog.Img = pygame.image.load("hedgehog_rev.png")
+                    screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT:
-                    hedgehogX_change = 0
+                    hedgehog.change = 0
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    hedgehogX_change = hedgehog_speed * hedgehog_mul
-                    hedgehogImg = pygame.image.load("hedgehog.png")
-                    screen.blit(hedgehogImg, (hedgehogX, hedgehogY))
+                    hedgehog.change = hedgehog_speed * hedgehog_mul
+                    hedgehog.Img = pygame.image.load("hedgehog.png")
+                    screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT:
-                    hedgehogX_change = 0
+                    hedgehog.change = 0
 
         #ruch gracza
         hedgehog_move()
