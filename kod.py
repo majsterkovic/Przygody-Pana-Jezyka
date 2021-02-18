@@ -1,10 +1,10 @@
 import pygame
 import random
 import pygame_menu
+import time
 from pygame import mixer
 
 pygame.init()
-
 counter = 0
 
 #definiowanie okna gry
@@ -25,7 +25,7 @@ pygame.mixer.music.play(-1)
 # wyświetlanie okna gry
 pygame.display.set_caption("Przygody Pana Jeżyka")
 
-class object:
+class oobject:
     def __init__(self, X, Y, Img, change):
         self.X = X
         self.Y = Y
@@ -33,19 +33,16 @@ class object:
         self.change = change
 
 #gracz (jeż)
+hedgehog = oobject( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
 
-hedgehog = object( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
-
-hedgehog_speed = 0.3
+hedgehog_speed = 3
 hedgehog_mul = 1.0
 
-
-
 # jablko
-apple = object([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-10, -110, -210], pygame.image.load("apple.png"), [0.2, 0.2, 0.2])
+apple = oobject([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-10, -110, -210], pygame.image.load("apple.png"), [2.1, 1.9, 2.0])
 
 # gruszka
-pear = object(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 0.23)
+pear = oobject(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 2.3)
 
 #wynik
 score_val = 0
@@ -58,7 +55,6 @@ def show_score(x, y):
     screen.blit(score, (x, y))
 
 def hedgehog_move():
-    global MAX_X
     global hedgehog
 
     hedgehog.X += hedgehog.change
@@ -79,8 +75,6 @@ def apple_m(X, Y, C, i):
 def apple_move():
 
     global apple
-    global MAX_X
-    global SCREEN_HEIGHT
 
     for i in range(3):
         apple_m(apple.X, apple.Y, apple.change, i)
@@ -97,14 +91,12 @@ def pear_m():
 def pear_move():
     global pear
     global counter
-    global SCREEN_HEIGHT
     pear_m()
     if pear.Y > SCREEN_HEIGHT:
         pear.X = random.randint(0, MAX_X)
         counter = 0
         pear.Y = -10
         pear_m()
-
 
 def draw(x, y, Img):
     screen.blit(Img, (x, y))
@@ -121,7 +113,6 @@ def get_speed():
 def get_point(i):
 
     global apple
-
     global hedgehog
 
     if hedgehog.X > apple.X[i]-64 and hedgehog.X < apple.X[i]+64 and apple.Y[i]+64-hedgehog.Y <= 64 and apple.Y[i]+64-hedgehog.Y > 0:
@@ -141,26 +132,19 @@ def start_the_game():
     global pear
 
     global score_val
-    global SCREEN_HEIGHT
     global counter
+    delta = 0
+    max_tps = 144
+    clock = pygame.time.Clock()
 
-    
-    #is_pear = False
-    ready_pear = random.randint(7000, 30000)
-
+    ready_pear = random.randint(220, 460)
 
     run = True
     while run:
-
-        counter += 1
         screen.fill((0,82,33))
         pygame.draw.rect(screen, (87,65,47), (0, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2) + 57, SCREEN_WIDTH, 100))
 
         for event in pygame.event.get():
-
-            #zamykanie gry
-            if event.type == pygame.QUIT:
-                run = False
 
             #klawisze
             if event.type == pygame.KEYDOWN:
@@ -181,34 +165,49 @@ def start_the_game():
                 if event.key == pygame.K_RIGHT:
                     hedgehog.change = 0
 
-        #ruch gracza
-        hedgehog_move()
-        #ruch jabłka
-        apple_move()
+            #zamykanie gry
+            if event.type == pygame.QUIT:
+                run = False
 
-        for i in range(3):
-            if get_point(i):
-                apple.Y[i] = SCREEN_HEIGHT + 1
-                score_val += 1
-
-        if counter == ready_pear:
-            #ruch gruszki
-            counter = ready_pear - 1
-            pear_move()
+        #Ticking
+        delta += clock.tick()/1000.0   
+        while delta > 1 / max_tps:
+            counter += 1
+            print(counter)
+            delta -= 1 / max_tps 
 
 
-        if get_speed():
-            hedgehog_mul += 0.015
-            pear.Y = SCREEN_HEIGHT + 1
-            pear.Y = -10
-            pear.X = random.randint(0, MAX_X)
+            #ruch gracza
+            hedgehog_move()
+            #ruch jabłka
+            apple_move()
 
-            counter = 0
-            ready_pear = random.randint(7000, 30000)
- 
+            for i in range(3):
+                if get_point(i):
+                    apple.Y[i] = SCREEN_HEIGHT + 1
+                    score_val += 1
 
-        show_score(textX, textY)
-        pygame.display.update()
+            if counter == ready_pear:
+                #ruch gruszki
+                counter = ready_pear - 1
+                pear_move()
+
+            if pear.Y > SCREEN_HEIGHT:
+                pear.X = random.randint(0, MAX_X)
+                counter = 0
+                pear.Y = -10
+
+            if get_speed():
+                hedgehog_mul += 0.15
+                pear.Y = SCREEN_HEIGHT + 1
+                pear.Y = -10
+                pear.X = random.randint(0, MAX_X)
+
+                counter = 0
+                ready_pear = random.randint(220, 460)
+
+            show_score(textX, textY)
+            pygame.display.update()
 
     pass
 
