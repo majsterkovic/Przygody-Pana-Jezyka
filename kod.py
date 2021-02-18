@@ -5,6 +5,7 @@ import time
 from pygame import mixer
 
 pygame.init()
+counter = 0
 
 #definiowanie okna gry
 SCREEN_HEIGHT = 720
@@ -44,14 +45,13 @@ apple = oobject([random.randint(0, MAX_X), random.randint(0, MAX_X), random.rand
 pear = oobject(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 2.3)
 
 #wynik
+score_val = 0
 font = pygame.font.Font('SyneMono-Regular.ttf', 32)
 textX = 5
 textY = 5
 
-score_val_and_counter = [0, 0]
-
 def show_score(x, y):
-    score = font.render("Wynik: " + str(score_val_and_counter[0]), True, (255,255,255))
+    score = font.render("Wynik: " + str(score_val), True, (255,255,255))
     screen.blit(score, (x, y))
 
 def hedgehog_move():
@@ -88,12 +88,13 @@ def pear_m():
     draw(pear.X, pear.Y, pear.Img)
     pear.Y += pear.change
 
-def pear_move(score_val_and_counter):
+def pear_move():
     global pear
+    global counter
     pear_m()
     if pear.Y > SCREEN_HEIGHT:
         pear.X = random.randint(0, MAX_X)
-        score_val_and_counter[1] = 0
+        counter = 0
         pear.Y = -10
         pear_m()
 
@@ -119,8 +120,12 @@ def get_point(i):
     else:
         return False
 
+def quit_the_game():
+    quit()
 
-def start_the_game(score_val_and_counter):
+
+
+def start_the_game():
 
     global hedgehog
     global hedgehog_speed
@@ -130,6 +135,8 @@ def start_the_game(score_val_and_counter):
 
     global pear
 
+    global score_val
+    global counter
     delta = 0
     max_tps = 144
     clock = pygame.time.Clock()
@@ -165,11 +172,18 @@ def start_the_game(score_val_and_counter):
             #zamykanie gry
             if event.type == pygame.QUIT:
                 run = False
+                counter = 0
+                score_val = 0
+                pear.Y = -20
+                for i in range(3):
+                    apple.Y[i] = (i+1) * -70
+                hedgehog.X = (SCREEN_WIDTH - IMG_SIZE) / 2
 
         #Ticking
         delta += clock.tick()/1000.0   
         while delta > 1 / max_tps:
-            score_val_and_counter[1] += 1
+            counter += 1
+            print(counter)
             delta -= 1 / max_tps 
 
 
@@ -181,17 +195,16 @@ def start_the_game(score_val_and_counter):
             for i in range(3):
                 if get_point(i):
                     apple.Y[i] = SCREEN_HEIGHT + 1
-                    score_val_and_counter[0] += 1
+                    score_val += 1
 
-            if score_val_and_counter[1] == ready_pear:
+            if counter == ready_pear:
                 #ruch gruszki
-                score_val_and_counter[1] = ready_pear - 1
-                pear_move(score_val_and_counter)
-                print(score_val_and_counter[1])
+                counter = ready_pear - 1
+                pear_move()
 
             if pear.Y > SCREEN_HEIGHT:
                 pear.X = random.randint(0, MAX_X)
-                score_val_and_counter[1] = 0
+                counter = 0
                 pear.Y = -10
 
             if get_speed():
@@ -200,10 +213,17 @@ def start_the_game(score_val_and_counter):
                 pear.Y = -10
                 pear.X = random.randint(0, MAX_X)
 
-                score_val_and_counter[1] = 0
+                counter = 0
                 ready_pear = random.randint(220, 460)
 
             show_score(textX, textY)
             pygame.display.update()
 
     pass
+
+#menu
+menu = pygame_menu.Menu(300, 400, 'Witaj', theme=pygame_menu.themes.THEME_BLUE)
+menu.add_text_input('Imię: ', default='Jacuś')
+menu.add_button('Graj', start_the_game)
+menu.add_button('Wyjdź', quit_the_game)
+menu.mainloop(screen)
