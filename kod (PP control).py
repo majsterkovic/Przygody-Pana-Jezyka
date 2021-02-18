@@ -170,11 +170,6 @@ def start_the_game():
     ready_pear = random.randint(220, 460)
 
     run = True
-
-    global name
-    print(name.get_value())
-
-
     while run:
         screen.fill((0,82,33))
         pygame.draw.rect(screen, (87,65,47), (0, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2) + 57, SCREEN_WIDTH, 100))
@@ -182,23 +177,20 @@ def start_the_game():
         for event in pygame.event.get():
 
             #klawisze
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    hedgehog.change = -1 * hedgehog_speed* hedgehog_mul
-                    hedgehog.Img = pygame.image.load("hedgehog_rev.png")
-                    screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    hedgehog.change = 0
+            keys = pygame.key.get_pressed() #zwraca stan klawiszy na klawiaturze jako wartość logiczną
+            if keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
+                hedgehog.change = 0
+            elif keys[pygame.K_RIGHT]:
+                hedgehog.change = hedgehog_speed * hedgehog_mul
+                hedgehog.Img = pygame.image.load("hedgehog.png")
+                screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
+            elif keys[pygame.K_LEFT]:
+                hedgehog.change = -1 * hedgehog_speed * hedgehog_mul
+                hedgehog.Img = pygame.image.load("hedgehog_rev.png")
+                screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
+            else:
+                hedgehog.change = 0
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    hedgehog.change = hedgehog_speed * hedgehog_mul
-                    hedgehog.Img = pygame.image.load("hedgehog.png")
-                    screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT:
-                    hedgehog.change = 0
 
             #zamykanie gry
             if event.type == pygame.QUIT:
@@ -268,8 +260,7 @@ def start_the_game():
 
 #menu
 menu = pygame_menu.Menu(300, 400, 'Witaj', theme=pygame_menu.themes.THEME_BLUE)
-name = menu.add_text_input('Imię: ', default='John')
+menu.add_text_input('Imię: ', default='Jacuś')
 menu.add_button('Graj', start_the_game)
 menu.add_button('Wyjdź', quit_the_game)
-menu.mainloop(screen, fps_limit=144)
-
+menu.mainloop(screen)
