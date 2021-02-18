@@ -2,6 +2,7 @@ import pygame
 import random
 import pygame_menu
 import time
+
 from pygame import mixer
 from pygame_menu import sound
 
@@ -132,11 +133,24 @@ def get_point(i):
 def quit_the_game():
     quit()
 
+def reset():
+
+    global counter
+    global score_val
+    global pear
+    global apple
+    global hedgehog
+
+    counter = 0
+    score_val = 0
+    pear.Y = -20
+    for i in range(3):
+        apple.Y[i] = (i+1) * -70
+    hedgehog.X = (SCREEN_WIDTH - IMG_SIZE) / 2
+
 
 
 def start_the_game():
-
-
 
     global hedgehog
     global hedgehog_speed
@@ -184,12 +198,8 @@ def start_the_game():
             #zamykanie gry
             if event.type == pygame.QUIT:
                 run = False
-                counter = 0
-                score_val = 0
-                pear.Y = -20
-                for i in range(3):
-                    apple.Y[i] = (i+1) * -70
-                hedgehog.X = (SCREEN_WIDTH - IMG_SIZE) / 2
+                reset()
+
 
         #Ticking
         delta += clock.tick()/1000.0   
@@ -232,7 +242,20 @@ def start_the_game():
                 ready_pear = random.randint(220, 460)
 
             show_score(textX, textY)
-            show_time(timeX, timeY, int(T))
+            show_time(timeX, timeY, round(T, 2))
+
+            if score_val == 23:
+                reset()
+                while run:
+                    screen.fill((0,0,0))
+                    show_time(SCREEN_HEIGHT/2-16, SCREEN_HEIGHT/2-32, round(T, 2))
+                    pygame.display.update()
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            run = False
+
+
+
             pygame.display.update()
 
     pass
