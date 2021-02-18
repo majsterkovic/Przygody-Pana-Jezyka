@@ -1,4 +1,4 @@
-# ![Mr. Hedgehog](/hedgehog.png) Welcome in “Mr. Hedgehog’s adventures”
+# ![Mr. Hedgehog](/hedgehog.png) Welcome to “Mr. Hedgehog’s adventures”
 ## Technologies
 * Python 3.9
 * pygame

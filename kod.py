@@ -3,6 +3,7 @@ import random
 import pygame_menu
 import time
 from pygame import mixer
+from pygame_menu import sound
 
 pygame.init()
 counter = 0
@@ -22,6 +23,7 @@ MAX_X = SCREEN_WIDTH - IMG_SIZE
 mixer.music.load('AutumnDay.mp3')
 pygame.mixer.music.play(-1)
 
+
 # wyświetlanie okna gry
 pygame.display.set_caption("Przygody Pana Jeżyka")
 
@@ -35,20 +37,26 @@ class oobject:
 #gracz (jeż)
 hedgehog = oobject( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
 
-hedgehog_speed = 3
+hedgehog_speed = 2.5
 hedgehog_mul = 1.0
 
 # jablko
-apple = oobject([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-10, -110, -210], pygame.image.load("apple.png"), [2.1, 1.9, 2.0])
+apple = oobject([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -510], pygame.image.load("apple.png"), [2.1, 1.9, 2.0])
 
 # gruszka
 pear = oobject(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 2.3)
 
 #wynik
 score_val = 0
-font = pygame.font.Font('SyneMono-Regular.ttf', 32)
+font = pygame.font.Font('Lato-Bold.ttf', 32)
 textX = 5
 textY = 5
+timeX = 5
+timeY = 42
+
+def show_time(x, y, t):
+    timee = font.render("Czas: " + str(t), True, (255,255,255))
+    screen.blit(timee, (x, y))
 
 def show_score(x, y):
     score = font.render("Wynik: " + str(score_val), True, (255,255,255))
@@ -117,6 +125,7 @@ def get_point(i):
 
     if hedgehog.X > apple.X[i]-64 and hedgehog.X < apple.X[i]+64 and apple.Y[i]+64-hedgehog.Y <= 64 and apple.Y[i]+64-hedgehog.Y > 0:
         return True
+
     else:
         return False
 
@@ -126,6 +135,8 @@ def quit_the_game():
 
 
 def start_the_game():
+
+
 
     global hedgehog
     global hedgehog_speed
@@ -138,6 +149,7 @@ def start_the_game():
     global score_val
     global counter
     delta = 0
+    T = 0
     max_tps = 144
     clock = pygame.time.Clock()
 
@@ -183,7 +195,8 @@ def start_the_game():
         delta += clock.tick()/1000.0   
         while delta > 1 / max_tps:
             counter += 1
-            print(counter)
+            #print(counter)
+            T += 1 / max_tps
             delta -= 1 / max_tps 
 
 
@@ -194,6 +207,8 @@ def start_the_game():
 
             for i in range(3):
                 if get_point(i):
+                    bite_sound = mixer.Sound('AppleBite.wav')
+                    bite_sound.play()
                     apple.Y[i] = SCREEN_HEIGHT + 1
                     score_val += 1
 
@@ -217,9 +232,11 @@ def start_the_game():
                 ready_pear = random.randint(220, 460)
 
             show_score(textX, textY)
+            show_time(timeX, timeY, int(T))
             pygame.display.update()
 
     pass
+
 
 #menu
 menu = pygame_menu.Menu(300, 400, 'Witaj', theme=pygame_menu.themes.THEME_BLUE)
