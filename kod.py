@@ -55,6 +55,9 @@ textY = 5
 timeX = 5
 timeY = 42
 
+#gracz
+nick = ""
+
 def show_time(x, y, t):
     timee = font.render("Czas: " + str(t), True, (255,255,255))
     screen.blit(timee, (x, y))
@@ -149,6 +152,16 @@ def reset():
     hedgehog.X = (SCREEN_WIDTH - IMG_SIZE) / 2
 
 
+def show(x, y, DANE, i):
+    font = pygame.font.Font('Lato-Regular.ttf', 32)
+
+    imie = font.render(str(i+1) + "." + " " + str(DANE[i][1]), True, (255,255,255))
+    punkty = font.render( str(DANE[i][0]), True, (255,255,255))
+
+    screen.blit(imie, (x, y+i*42))
+    screen.blit(punkty, (x+200, y+i*42))    
+
+
 
 def start_the_game():
 
@@ -160,6 +173,8 @@ def start_the_game():
 
     global pear
 
+    global nick
+
     global score_val
     global counter
     delta = 0
@@ -170,9 +185,6 @@ def start_the_game():
     ready_pear = random.randint(220, 460)
 
     run = True
-
-    global name
-    print(name.get_value())
 
 
     while run:
@@ -214,12 +226,13 @@ def start_the_game():
             T += 1 / max_tps
             delta -= 1 / max_tps 
 
-
             #ruch gracza
             hedgehog_move()
+
             #ruch jabłka
             apple_move()
 
+            #zjadanie jablka
             for i in range(3):
                 if get_point(i):
                     bite_sound = mixer.Sound('AppleBite.wav')
@@ -227,30 +240,39 @@ def start_the_game():
                     apple.Y[i] = SCREEN_HEIGHT + 1
                     score_val += 1
 
+
+            #wypuszczenie gruszki
             if counter == ready_pear:
                 #ruch gruszki
                 counter = ready_pear - 1
                 pear_move()
 
+            #znikniecie gruszki
             if pear.Y > SCREEN_HEIGHT:
                 pear.X = random.randint(0, MAX_X)
                 counter = 0
                 pear.Y = -10
 
+            #zjedzenie gruszki
             if get_speed():
                 hedgehog_mul += 0.15
                 pear.Y = SCREEN_HEIGHT + 1
                 pear.Y = -10
                 pear.X = random.randint(0, MAX_X)
-
                 counter = 0
                 ready_pear = random.randint(220, 460)
 
+            #pokazuj wynik
             show_score(textX, textY)
+            #pokazuj czas
             show_time(timeX, timeY, round(T, 2))
 
-            if score_val == 23:
+
+            #koniec gry
+            if score_val == 20:
+                your_time = round(T, 2)
                 reset()
+                #ekran pokazujący czas
                 while run:
                     screen.fill((0,0,0))
                     show_time(SCREEN_HEIGHT/2-16, SCREEN_HEIGHT/2-32, round(T, 2))
@@ -260,15 +282,45 @@ def start_the_game():
                             run = False
 
 
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_SPACE:
+                                highscores = []
+                                your_score = str(your_time) + " " + nick.get_value() + "\n"
+                                f = open("scores.txt", "a")
+                                f.write(your_score)
+                                f.close()
+                                f = open("scores.txt", "r")
+                                for line in f:
+                                    x = line.split()
+                                    x[0] = float(x[0])
+                                    highscores.append(x)
+                                highscores.sort()
+
+                                #ekran pokazujący HS
+                                run = True
+                                while run:
+
+                                    for event in pygame.event.get():
+
+                                            #zamykanie gry
+                                            if event.type == pygame.QUIT:
+                                                run = False
+
+                                    screen.fill((0,82,33))
+                                    fontHS = pygame.font.Font('Lato-Black.ttf', 42)
+                                    screen.blit(fontHS.render("HIGHSCORES:", True, (235,235,235)), (390, 100))
+                                    for i in range(min(10, len(highscores))):
+                                        show(390, 150, highscores, i)
+
+                                    pygame.display.update()
 
             pygame.display.update()
 
     pass
 
-
 #menu
 menu = pygame_menu.Menu(300, 400, 'Witaj', theme=pygame_menu.themes.THEME_BLUE)
-name = menu.add_text_input('Imię: ', default='John')
+nick = menu.add_text_input('Imię: ', default='John')
 menu.add_button('Graj', start_the_game)
 menu.add_button('Wyjdź', quit_the_game)
 menu.mainloop(screen, fps_limit=144)
