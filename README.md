@@ -19,3 +19,4 @@ def draw(x, y, Img):
 * Autumn Day Kevin MacLeod (incompetech.com)
 Licensed under Creative Commons: By Attribution 3.0 License
 http://creativecommons.org/licenses/by/3.0/
+* Apple Bite sound by Simon Cragg from [SoundBible](https://soundbible.com/1968-Apple-Bite.html). Licensed under Attribution 3.0.

@@ -47,6 +47,9 @@ apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint
 # gruszka
 pear = item(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 2.3)
 
+#kamień
+stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("stone3.png"), [2.0])
+
 #wynik
 score_val = 0
 
@@ -99,15 +102,30 @@ def apple_move():
             apple.Y[i] = -10 + (i * -100)
             apple_m(apple.X, apple.Y, apple.change, i)
 
-def pear_m(): 
-    global pear
-    draw(pear.X, pear.Y, pear.Img)
-    pear.Y += pear.change
+def stone_m(X, Y, C, i):
+
+    global stone
+
+    draw(X[i], Y[i], stone.Img)
+    Y[i] += C[i]
+
+def stone_move():
+
+    global stone
+
+    for i in range(len(stone.X)):
+        stone_m(stone.X, stone.Y, stone.change, i)
+        if stone.Y[i] > SCREEN_HEIGHT:
+            stone.X[i] = random.randint(0, MAX_X)
+            stone.Y[i] = -10 + (i * -100)
+            stone_m(stone.X, stone.Y, stone.change, i)
+
 
 def pear_move():
     global pear
     global counter
-    pear_m()
+    draw(pear.X, pear.Y, pear.Img)
+    pear.Y += pear.change
     if pear.Y > SCREEN_HEIGHT:
         pear.X = random.randint(0, MAX_X)
         counter = 0
@@ -136,6 +154,17 @@ def get_point(i):
     else:
         return False
 
+def get_hit(i):
+
+    global stone
+    global hedgehog
+
+    if hedgehog.X > stone.X[i]-64 and hedgehog.X < stone.X[i]+64 and stone.Y[i]+64-hedgehog.Y <= 64 and stone.Y[i]+64-hedgehog.Y > 0:
+        return True
+    else:
+        return False
+
+
 def quit_the_game():
     quit()
 
@@ -147,6 +176,9 @@ def reset():
     global apple
     global hedgehog
     global hedgehog_speed
+    global stone
+
+    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("stone3.png"), [2.0])
 
     counter = 0
     score_val = 0
@@ -167,8 +199,6 @@ def show(x, y, DANE, i):
     screen.blit(punkty, (x+200, y+i*42))    
 
 
-
-
 def start_the_game():
 
     global hedgehog
@@ -176,7 +206,7 @@ def start_the_game():
     global hedgehog_mul
 
     global apple
-
+    global stone
     global pear
 
     global nick
@@ -186,13 +216,15 @@ def start_the_game():
 
     bite_sound = mixer.Sound('AppleBite.wav')
 
+    dead = False
+
     delta = 0
     T = 0
     max_tps = 144
 
     clock = pygame.time.Clock()
 
-    ready_pear = random.randint(220, 460)
+    ready_pear = random.randint(460, 840)
 
     run = True
 
@@ -231,6 +263,7 @@ def start_the_game():
             counter += 1
             #print(counter)
             T += 1 / max_tps #licznik w sekundach
+            #print(round(T, 2))
             delta -= 1 / max_tps 
 
             #ruch gracza
@@ -239,12 +272,36 @@ def start_the_game():
             #ruch jabłka
             apple_move()
 
+            #ruch kaminia
+            stone_move()
+
+            #dodanie kamienia
+            if round(T, 2) % 18 == 0:
+                stone.X.append(random.randint(0, MAX_X))
+                stone.Y.append(-400)
+                stone.change.append(2.0)
+
+
             #zjadanie jablka
             for i in range(3):
                 if get_point(i):
                     bite_sound.play()
                     apple.Y[i] = SCREEN_HEIGHT + 1
                     score_val += 1
+
+            #zjadanie kamienia
+            for i in range(len(stone.X)):
+                if get_hit(i):
+                    #hit_sound.play()
+                    stone.Y[i] = SCREEN_HEIGHT + 1
+                    #score_val += 1
+                    screen.fill((255,255,255))
+                    obituary = font.render("Umarłes " + str(nick.get_value()), True, (0,0,0))
+                    screen.blit(obituary, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+                    pygame.display.update()
+                    time.sleep(5)
+                    dead = True
+                    reset()   
 
             #znikniecie gruszki
             if pear.Y > SCREEN_HEIGHT:
@@ -253,14 +310,11 @@ def start_the_game():
                 pear.Y = -10
                 print("Gruszka przeleciala")
 
-
             #wypuszczenie gruszki
             if counter == ready_pear:
                 #ruch gruszki
                 counter = ready_pear - 1
                 pear_move()
-
-
 
             #zjedzenie gruszki
             if get_speed():
@@ -269,7 +323,7 @@ def start_the_game():
                 pear.Y = -10
                 pear.X = random.randint(0, MAX_X)
                 counter = 0
-                ready_pear = random.randint(220, 460)
+                ready_pear = random.randint(460, 840)
                 print("Gruszka zjedzona")
 
             #pokazuj wynik
@@ -279,7 +333,7 @@ def start_the_game():
 
 
             #koniec gry
-            if score_val == 100:
+            if score_val == 100 or dead == True:
                 your_time = round(T, 2)
                 reset()
                 #ekran pokazujący czas
@@ -296,10 +350,11 @@ def start_the_game():
                             if event.key == pygame.K_SPACE:
 
                                 highscores = []
-                                your_score = str(your_time) + " " + nick.get_value() + "\n"
-                                f = open("scores.txt", "a")
-                                f.write(your_score)
-                                f.close()
+                                if dead == False:
+                                    your_score = str(your_time) + " " + nick.get_value() + "\n"
+                                    f = open("scores.txt", "a")
+                                    f.write(your_score)
+                                    f.close()
                                 f = open("scores.txt", "r")
                                 for line in f:
                                     x = line.split()
