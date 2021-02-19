@@ -269,13 +269,13 @@ def start_the_game():
 
 
             #koniec gry
-            if score_val == 20:
+            if score_val == 2:
                 your_time = round(T, 2)
                 reset()
                 #ekran pokazujący czas
                 while run:
-                    screen.fill((0,0,0))
-                    show_time(SCREEN_HEIGHT/2-16, SCREEN_HEIGHT/2-32, round(T, 2))
+                    screen.fill((10,92,43))
+                    show_time(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, round(T, 2))
                     pygame.display.update()
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:

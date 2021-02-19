@@ -4,7 +4,11 @@
 * pygame
 * pygame-menu
 ## Setup
-Download and run main.py. Python 3.9 is required.
+Download and run main.py. Python 3.9 with pygame and pygame-menu is required.
+```console
+pip install pygame
+pip install pygame-menu
+```
 ## Code Examples
 ```python
 def draw(x, y, Img):
