@@ -28,7 +28,7 @@ pygame.mixer.music.play(-1)
 # wyświetlanie okna gry
 pygame.display.set_caption("Przygody Pana Jeżyka")
 
-class oobject:
+class item:
     def __init__(self, X, Y, Img, change):
         self.X = X
         self.Y = Y
@@ -36,22 +36,26 @@ class oobject:
         self.change = change
 
 #gracz (jeż)
-hedgehog = oobject( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
+hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
 
 hedgehog_speed = 2.5
 hedgehog_mul = 1.0
 
 # jablko
-apple = oobject([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -510], pygame.image.load("apple.png"), [2.1, 1.9, 2.0])
+apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -310], pygame.image.load("apple.png"), [2.1, 1.9, 2.0])
 
 # gruszka
-pear = oobject(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 2.3)
+pear = item(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 2.3)
 
 #wynik
 score_val = 0
+
+#czcionka
 font = pygame.font.Font('Lato-Bold.ttf', 32)
+
 textX = 5
 textY = 5
+
 timeX = 5
 timeY = 42
 
@@ -108,7 +112,7 @@ def pear_move():
         pear.X = random.randint(0, MAX_X)
         counter = 0
         pear.Y = -10
-        pear_m()
+        print("Gruszka przeleciala")
 
 def draw(x, y, Img):
     screen.blit(Img, (x, y))
@@ -129,7 +133,6 @@ def get_point(i):
 
     if hedgehog.X > apple.X[i]-64 and hedgehog.X < apple.X[i]+64 and apple.Y[i]+64-hedgehog.Y <= 64 and apple.Y[i]+64-hedgehog.Y > 0:
         return True
-
     else:
         return False
 
@@ -143,13 +146,15 @@ def reset():
     global pear
     global apple
     global hedgehog
+    global hedgehog_speed
 
     counter = 0
     score_val = 0
     pear.Y = -20
     for i in range(3):
-        apple.Y[i] = (i+1) * -70
+        apple.Y[i] = (i+1) * -100
     hedgehog.X = (SCREEN_WIDTH - IMG_SIZE) / 2
+    hedgehog_speed = 2.5
 
 
 def show(x, y, DANE, i):
@@ -160,6 +165,7 @@ def show(x, y, DANE, i):
 
     screen.blit(imie, (x, y+i*42))
     screen.blit(punkty, (x+200, y+i*42))    
+
 
 
 
@@ -177,16 +183,20 @@ def start_the_game():
 
     global score_val
     global counter
+
+    bite_sound = mixer.Sound('AppleBite.wav')
+
     delta = 0
     T = 0
     max_tps = 144
+
     clock = pygame.time.Clock()
 
     ready_pear = random.randint(220, 460)
 
     run = True
 
-
+    #pętla główna
     while run:
         screen.fill((0,82,33))
         pygame.draw.rect(screen, (87,65,47), (0, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2) + 57, SCREEN_WIDTH, 100))
@@ -194,23 +204,20 @@ def start_the_game():
         for event in pygame.event.get():
 
             #klawisze
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    hedgehog.change = -1 * hedgehog_speed* hedgehog_mul
-                    hedgehog.Img = pygame.image.load("hedgehog_rev.png")
-                    screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    hedgehog.change = 0
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    hedgehog.change = hedgehog_speed * hedgehog_mul
-                    hedgehog.Img = pygame.image.load("hedgehog.png")
-                    screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT:
-                    hedgehog.change = 0
+            keys = pygame.key.get_pressed()
+            #zwraca stan klawiszy na klawiaturze jako wartość logiczną
+            if keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
+                hedgehog.change = 0
+            elif keys[pygame.K_RIGHT]:
+                hedgehog.change = hedgehog_speed * hedgehog_mul
+                hedgehog.Img = pygame.image.load("hedgehog.png")
+                screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
+            elif keys[pygame.K_LEFT]:
+                hedgehog.change = -1 * hedgehog_speed * hedgehog_mul
+                hedgehog.Img = pygame.image.load("hedgehog_rev.png")
+                screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
+            else:
+                hedgehog.change = 0
 
             #zamykanie gry
             if event.type == pygame.QUIT:
@@ -223,7 +230,7 @@ def start_the_game():
         while delta > 1 / max_tps:
             counter += 1
             #print(counter)
-            T += 1 / max_tps
+            T += 1 / max_tps #licznik w sekundach
             delta -= 1 / max_tps 
 
             #ruch gracza
@@ -235,10 +242,16 @@ def start_the_game():
             #zjadanie jablka
             for i in range(3):
                 if get_point(i):
-                    bite_sound = mixer.Sound('AppleBite.wav')
                     bite_sound.play()
                     apple.Y[i] = SCREEN_HEIGHT + 1
                     score_val += 1
+
+            #znikniecie gruszki
+            if pear.Y > SCREEN_HEIGHT:
+                pear.X = random.randint(0, MAX_X)
+                counter = 0
+                pear.Y = -10
+                print("Gruszka przeleciala")
 
 
             #wypuszczenie gruszki
@@ -247,11 +260,7 @@ def start_the_game():
                 counter = ready_pear - 1
                 pear_move()
 
-            #znikniecie gruszki
-            if pear.Y > SCREEN_HEIGHT:
-                pear.X = random.randint(0, MAX_X)
-                counter = 0
-                pear.Y = -10
+
 
             #zjedzenie gruszki
             if get_speed():
@@ -261,6 +270,7 @@ def start_the_game():
                 pear.X = random.randint(0, MAX_X)
                 counter = 0
                 ready_pear = random.randint(220, 460)
+                print("Gruszka zjedzona")
 
             #pokazuj wynik
             show_score(textX, textY)
@@ -269,7 +279,7 @@ def start_the_game():
 
 
             #koniec gry
-            if score_val == 2:
+            if score_val == 100:
                 your_time = round(T, 2)
                 reset()
                 #ekran pokazujący czas
@@ -284,6 +294,7 @@ def start_the_game():
 
                         if event.type == pygame.KEYDOWN:
                             if event.key == pygame.K_SPACE:
+
                                 highscores = []
                                 your_score = str(your_time) + " " + nick.get_value() + "\n"
                                 f = open("scores.txt", "a")
