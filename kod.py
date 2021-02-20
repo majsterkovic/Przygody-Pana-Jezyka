@@ -2,6 +2,7 @@ import pygame
 import random
 import pygame_menu
 import time
+from math import sqrt
 
 from pygame import mixer
 from pygame_menu import sound
@@ -21,8 +22,8 @@ IMG_SIZE = 64
 MAX_X = SCREEN_WIDTH - IMG_SIZE
 
 #muzyka w tle
-mixer.music.load('AutumnDay.mp3')
-pygame.mixer.music.play(-1)
+mixer.music.load('sounds/AutumnDay.mp3')
+mixer.music.play(-1)
 
 
 # wyświetlanie okna gry
@@ -54,7 +55,7 @@ stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("stone3.png")
 score_val = 0
 
 #czcionka
-font = pygame.font.Font('Lato-Bold.ttf', 32)
+font = pygame.font.Font('fonts/Lato-Bold.ttf', 32)
 
 textX = 5
 textY = 5
@@ -144,25 +145,36 @@ def get_speed():
     else:
         return False
 
-def get_point(i):
+def collision(item, i):
 
-    global apple
     global hedgehog
 
-    if hedgehog.X > apple.X[i]-64 and hedgehog.X < apple.X[i]+64 and apple.Y[i]+64-hedgehog.Y <= 64 and apple.Y[i]+64-hedgehog.Y > 0:
+    d = (item.X[i] - hedgehog.X)*(item.X[i] - hedgehog.X) + (item.Y[i] - hedgehog.Y)*(item.Y[i] - hedgehog.Y)
+    if sqrt(d) < 48:
         return True
     else:
         return False
 
-def get_hit(i):
 
-    global stone
-    global hedgehog
+# def get_point(i):
 
-    if hedgehog.X > stone.X[i]-64 and hedgehog.X < stone.X[i]+64 and stone.Y[i]+64-hedgehog.Y <= 64 and stone.Y[i]+64-hedgehog.Y > 0:
-        return True
-    else:
-        return False
+#     global apple
+#     global hedgehog
+
+#     if hedgehog.X > apple.X[i]-64 and hedgehog.X < apple.X[i]+64 and apple.Y[i]+64-hedgehog.Y <= 64 and apple.Y[i]+64-hedgehog.Y > 0:
+#         return True
+#     else:
+#         return False
+
+# def get_hit(i):
+
+#     global stone
+#     global hedgehog
+
+#     if hedgehog.X > stone.X[i]-64 and hedgehog.X < stone.X[i]+64 and stone.Y[i]+64-hedgehog.Y <= 64 and stone.Y[i]+64-hedgehog.Y > 0:
+#         return True
+#     else:
+#         return False
 
 
 def quit_the_game():
@@ -190,7 +202,7 @@ def reset():
 
 
 def show(x, y, DANE, i):
-    font = pygame.font.Font('Lato-Regular.ttf', 32)
+    font = pygame.font.Font('fonts/Lato-Regular.ttf', 32)
 
     imie = font.render(str(i+1) + "." + " " + str(DANE[i][1]), True, (255,255,255))
     punkty = font.render( str(DANE[i][0]), True, (255,255,255))
@@ -214,7 +226,8 @@ def start_the_game():
     global score_val
     global counter
 
-    bite_sound = mixer.Sound('AppleBite.wav')
+    bite_sound = mixer.Sound('sounds/AppleBite.wav')
+    hit_sound = mixer.Sound('sounds/StoneHit.wav')
 
     dead = False
 
@@ -276,7 +289,7 @@ def start_the_game():
             stone_move()
 
             #dodanie kamienia
-            if round(T, 2) % 18 == 0:
+            if round(T, 2) % 1 == 0:
                 stone.X.append(random.randint(0, MAX_X))
                 stone.Y.append(-400)
                 stone.change.append(2.0)
@@ -284,24 +297,22 @@ def start_the_game():
 
             #zjadanie jablka
             for i in range(3):
-                if get_point(i):
+                if collision(apple, i):
                     bite_sound.play()
                     apple.Y[i] = SCREEN_HEIGHT + 1
                     score_val += 1
 
             #zjadanie kamienia
             for i in range(len(stone.X)):
-                if get_hit(i):
-                    #hit_sound.play()
-                    stone.Y[i] = SCREEN_HEIGHT + 1
-                    #score_val += 1
+                if collision(stone, i):
+                    hit_sound.play()
                     screen.fill((255,255,255))
                     obituary = font.render("Umarłes " + str(nick.get_value()), True, (0,0,0))
                     screen.blit(obituary, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
                     pygame.display.update()
-                    time.sleep(5)
                     dead = True
-                    reset()   
+                    reset()
+                    break   
 
             #znikniecie gruszki
             if pear.Y > SCREEN_HEIGHT:
@@ -336,6 +347,7 @@ def start_the_game():
             if score_val == 100 or dead == True:
                 your_time = round(T, 2)
                 reset()
+
                 #ekran pokazujący czas
                 while run:
                     screen.fill((10,92,43))
@@ -373,7 +385,7 @@ def start_the_game():
                                                 run = False
 
                                     screen.fill((0,82,33))
-                                    fontHS = pygame.font.Font('Lato-Black.ttf', 42)
+                                    fontHS = pygame.font.Font('fonts/Lato-Black.ttf', 42)
                                     screen.blit(fontHS.render("HIGHSCORES:", True, (235,235,235)), (390, 100))
                                     for i in range(min(10, len(highscores))):
                                         show(390, 150, highscores, i)
@@ -386,7 +398,7 @@ def start_the_game():
 
 #menu
 menu = pygame_menu.Menu(300, 400, 'Witaj', theme=pygame_menu.themes.THEME_BLUE)
-nick = menu.add_text_input('Imię: ', default='John')
+nick = menu.add_text_input('Imię: ', default='Jacus')
 menu.add_button('Graj', start_the_game)
 menu.add_button('Wyjdź', quit_the_game)
 menu.mainloop(screen, fps_limit=144)
