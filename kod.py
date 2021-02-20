@@ -30,26 +30,27 @@ mixer.music.play(-1)
 pygame.display.set_caption("Przygody Pana Jeżyka")
 
 class item:
-    def __init__(self, X, Y, Img, change):
+    def __init__(self, X, Y, Img, change, snd):
         self.X = X
         self.Y = Y
         self.Img = Img
         self.change = change
+        self.snd = snd
 
 #gracz (jeż)
-hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0)
+hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0, mixer.Sound('sounds/StoneHit.wav'))
 
 hedgehog_speed = 2.5
 hedgehog_mul = 1.0
 
 # jablko
-apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -310], pygame.image.load("apple.png"), [2.1, 1.9, 2.0])
+apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -310], pygame.image.load("apple.png"), [2.1, 1.9, 2.0], mixer.Sound('sounds/AppleBite.wav'))
 
 # gruszka
-pear = item(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 2.3)
+pear = item(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 2.3, mixer.Sound('sounds/PearBite.wav'))
 
 #kamień
-stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("stone3.png"), [2.0])
+stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("stone3.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
 
 #wynik
 score_val = 0
@@ -155,28 +156,6 @@ def collision(item, i):
     else:
         return False
 
-
-# def get_point(i):
-
-#     global apple
-#     global hedgehog
-
-#     if hedgehog.X > apple.X[i]-64 and hedgehog.X < apple.X[i]+64 and apple.Y[i]+64-hedgehog.Y <= 64 and apple.Y[i]+64-hedgehog.Y > 0:
-#         return True
-#     else:
-#         return False
-
-# def get_hit(i):
-
-#     global stone
-#     global hedgehog
-
-#     if hedgehog.X > stone.X[i]-64 and hedgehog.X < stone.X[i]+64 and stone.Y[i]+64-hedgehog.Y <= 64 and stone.Y[i]+64-hedgehog.Y > 0:
-#         return True
-#     else:
-#         return False
-
-
 def quit_the_game():
     quit()
 
@@ -190,7 +169,7 @@ def reset():
     global hedgehog_speed
     global stone
 
-    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("stone3.png"), [2.0])
+    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("stone3.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
 
     counter = 0
     score_val = 0
@@ -226,8 +205,9 @@ def start_the_game():
     global score_val
     global counter
 
-    bite_sound = mixer.Sound('sounds/AppleBite.wav')
-    hit_sound = mixer.Sound('sounds/StoneHit.wav')
+    class effect():
+        def __init__(self, sound):
+            self.sound = sound
 
     dead = False
 
@@ -298,14 +278,14 @@ def start_the_game():
             #zjadanie jablka
             for i in range(3):
                 if collision(apple, i):
-                    bite_sound.play()
+                    apple.snd.play()
                     apple.Y[i] = SCREEN_HEIGHT + 1
                     score_val += 1
 
             #zjadanie kamienia
             for i in range(len(stone.X)):
                 if collision(stone, i):
-                    hit_sound.play()
+                    stone.snd.play()
                     screen.fill((255,255,255))
                     obituary = font.render("Umarłes " + str(nick.get_value()), True, (0,0,0))
                     screen.blit(obituary, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
@@ -329,6 +309,7 @@ def start_the_game():
 
             #zjedzenie gruszki
             if get_speed():
+                pear.snd.play()
                 hedgehog_mul += 0.15
                 pear.Y = SCREEN_HEIGHT + 1
                 pear.Y = -10
@@ -391,7 +372,6 @@ def start_the_game():
                                         show(390, 150, highscores, i)
 
                                     pygame.display.update()
-
             pygame.display.update()
 
     pass
