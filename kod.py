@@ -26,10 +26,8 @@ MAX_X = SCREEN_WIDTH - IMG_SIZE
 mixer.music.load('sounds/AutumnDay.mp3')
 mixer.music.play(-1)
 
-
 # wyświetlanie okna gry
 pygame.display.set_caption("Przygody Pana Jeżyka")
-
 
 #gracz (jeż)
 hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("images/hedgehog.png"), 0, mixer.Sound('sounds/StoneHit.wav'))
@@ -70,6 +68,7 @@ def show_score(x, y):
     screen.blit(score, (x, y))
 
 def hedgehog_move():
+
     global hedgehog
 
     hedgehog.X += hedgehog.change
@@ -109,8 +108,10 @@ def stone_move():
 
 
 def pear_move():
+
     global pear
     global counter
+
     draw(pear.X, pear.Y, pear.Img)
     pear.Y += pear.change
     if pear.Y > SCREEN_HEIGHT:
@@ -123,6 +124,7 @@ def draw(x, y, Img):
     screen.blit(Img, (x, y))
 
 def get_speed():
+
     global pear
     global hedgehog
 
@@ -177,6 +179,7 @@ def show(x, y, DANE, i):
     screen.blit(punkty, (x+200, y+i*42)) 
 
 def moving():
+    
     global hedgehog
 
     for event in pygame.event.get():
@@ -204,7 +207,6 @@ def moving():
             
     return True
 
-
 def start_the_game():
 
     global hedgehog
@@ -219,10 +221,6 @@ def start_the_game():
 
     global score_val
     global counter
-
-    class effect():
-        def __init__(self, sound):
-            self.sound = sound
 
     dead = False
 
