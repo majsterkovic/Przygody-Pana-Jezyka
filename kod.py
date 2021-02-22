@@ -44,7 +44,7 @@ apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint
 pear = item(random.randint(0, MAX_X), -10, pygame.image.load("images/pear.png"), 2.3, mixer.Sound('sounds/PearBite.wav'))
 
 #kamień
-stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone3.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
+stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
 
 #wynik
 score_val = 0
@@ -155,7 +155,7 @@ def reset():
     global hedgehog_mul
     global stone
 
-    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone3.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
+    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
 
     counter = 0
     score_val = 0
