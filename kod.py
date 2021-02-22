@@ -3,11 +3,10 @@ import random
 import pygame_menu
 import time
 from math import sqrt
-
-import threading
-
 from pygame import mixer
 from pygame_menu import sound
+
+from classes import item
 
 pygame.init()
 counter = 0
@@ -31,28 +30,21 @@ mixer.music.play(-1)
 # wyświetlanie okna gry
 pygame.display.set_caption("Przygody Pana Jeżyka")
 
-class item:
-    def __init__(self, X, Y, Img, change, snd):
-        self.X = X
-        self.Y = Y
-        self.Img = Img
-        self.change = change
-        self.snd = snd
 
 #gracz (jeż)
-hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("hedgehog.png"), 0, mixer.Sound('sounds/StoneHit.wav'))
+hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("images/hedgehog.png"), 0, mixer.Sound('sounds/StoneHit.wav'))
 
 hedgehog_speed = 2.5
 hedgehog_mul = 1.0
 
 # jablko
-apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -310], pygame.image.load("apple.png"), [2.1, 1.9, 2.0], mixer.Sound('sounds/AppleBite.wav'))
+apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -310], pygame.image.load("images/apple.png"), [2.1, 1.9, 2.0], mixer.Sound('sounds/AppleBite.wav'))
 
 # gruszka
-pear = item(random.randint(0, MAX_X), -10, pygame.image.load("pear.png"), 2.3, mixer.Sound('sounds/PearBite.wav'))
+pear = item(random.randint(0, MAX_X), -10, pygame.image.load("images/pear.png"), 2.3, mixer.Sound('sounds/PearBite.wav'))
 
 #kamień
-stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("stone3.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
+stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone3.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
 
 #wynik
 score_val = 0
@@ -88,29 +80,20 @@ def hedgehog_move():
         hedgehog.X = MAX_X
     draw(hedgehog.X, hedgehog.Y, hedgehog.Img)
 
-def apple_m(X, Y, C, i):
-
-    global apple
-
-    draw(X[i], Y[i], apple.Img)
-    Y[i] += C[i]
-
 def apple_move():
 
     global apple
 
     for i in range(3):
-        apple_m(apple.X, apple.Y, apple.change, i)
+        item_m(apple.X, apple.Y, apple.change, i, apple)
         if apple.Y[i] > SCREEN_HEIGHT:
             apple.X[i] = random.randint(0, MAX_X)
             apple.Y[i] = -10 + (i * -100)
-            apple_m(apple.X, apple.Y, apple.change, i)
+            item_m(apple.X, apple.Y, apple.change, i, apple)
 
-def stone_m(X, Y, C, i):
+def item_m(X, Y, C, i,item):
 
-    global stone
-
-    draw(X[i], Y[i], stone.Img)
+    draw(X[i], Y[i], item.Img)
     Y[i] += C[i]
 
 def stone_move():
@@ -118,11 +101,11 @@ def stone_move():
     global stone
 
     for i in range(len(stone.X)):
-        stone_m(stone.X, stone.Y, stone.change, i)
+        item_m(stone.X, stone.Y, stone.change, i, stone)
         if stone.Y[i] > SCREEN_HEIGHT:
             stone.X[i] = random.randint(0, MAX_X)
             stone.Y[i] = -10 + (i * -100)
-            stone_m(stone.X, stone.Y, stone.change, i)
+            item_m(stone.X, stone.Y, stone.change, i, stone)
 
 
 def pear_move():
@@ -169,9 +152,10 @@ def reset():
     global apple
     global hedgehog
     global hedgehog_speed
+    global hedgehog_mul
     global stone
 
-    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("stone3.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
+    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone3.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
 
     counter = 0
     score_val = 0
@@ -180,6 +164,7 @@ def reset():
         apple.Y[i] = (i+1) * -100
     hedgehog.X = (SCREEN_WIDTH - IMG_SIZE) / 2
     hedgehog_speed = 2.5
+    hedgehog_mul = 1.0
 
 
 def show(x, y, DANE, i):
@@ -203,11 +188,11 @@ def moving():
             hedgehog.change = 0
         elif keys[pygame.K_RIGHT]:
             hedgehog.change = hedgehog_speed * hedgehog_mul
-            hedgehog.Img = pygame.image.load("hedgehog.png")
+            hedgehog.Img = pygame.image.load("images/hedgehog.png")
             screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
         elif keys[pygame.K_LEFT]:
             hedgehog.change = -1 * hedgehog_speed * hedgehog_mul
-            hedgehog.Img = pygame.image.load("hedgehog_rev.png")
+            hedgehog.Img = pygame.image.load("images/hedgehog_rev.png")
             screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
         else:
             hedgehog.change = 0
@@ -278,7 +263,7 @@ def start_the_game():
             stone_move()
 
             #dodanie kamienia
-            if round(T, 2) % 1 == 0:
+            if round(T, 2) % 15 == 0:
                 stone.X.append(random.randint(0, MAX_X))
                 stone.Y.append(-400)
                 stone.change.append(2.0)
@@ -334,7 +319,7 @@ def start_the_game():
 
 
             #koniec gry
-            if score_val == 100 or dead == True:
+            if score_val == 30 or dead == True:
                 your_time = round(T, 2)
                 reset()
 
@@ -391,4 +376,3 @@ nick = menu.add_text_input('Imię: ', default='Jacus')
 menu.add_button('Graj', start_the_game)
 menu.add_button('Wyjdź', quit_the_game)
 menu.mainloop(screen, fps_limit=144)
-
