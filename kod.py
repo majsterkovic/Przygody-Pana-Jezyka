@@ -32,17 +32,17 @@ pygame.display.set_caption("Przygody Pana Jeżyka")
 #gracz (jeż)
 hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("images/hedgehog.png"), 0, mixer.Sound('sounds/StoneHit.wav'))
 
-hedgehog_speed = 2.5
+hedgehog_speed = 3.6
 hedgehog_mul = 1.0
 
 # jablko
-apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -310], pygame.image.load("images/apple.png"), [2.1, 1.9, 2.0], mixer.Sound('sounds/AppleBite.wav'))
+apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -310], pygame.image.load("images/apple.png"), [3.02, 2.74, 2.88], mixer.Sound('sounds/AppleBite.wav'))
 
 # gruszka
-pear = item(random.randint(0, MAX_X), -10, pygame.image.load("images/pear.png"), 2.3, mixer.Sound('sounds/PearBite.wav'))
+pear = item(random.randint(0, MAX_X), -10, pygame.image.load("images/pear.png"), 3.31, mixer.Sound('sounds/PearBite.wav'))
 
 #kamień
-stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
+stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone.png"), [2.88], mixer.Sound('sounds/StoneHit.wav'))
 
 #wynik
 score_val = 0
@@ -157,7 +157,7 @@ def reset():
     global hedgehog_mul
     global stone
 
-    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone.png"), [2.0], mixer.Sound('sounds/StoneHit.wav'))
+    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone.png"), [2.88], mixer.Sound('sounds/StoneHit.wav'))
 
     counter = 0
     score_val = 0
@@ -165,7 +165,7 @@ def reset():
     for i in range(3):
         apple.Y[i] = (i+1) * -100
     hedgehog.X = (SCREEN_WIDTH - IMG_SIZE) / 2
-    hedgehog_speed = 2.5
+    hedgehog_speed = 3.6
     hedgehog_mul = 1.0
 
 
@@ -226,7 +226,7 @@ def start_the_game():
 
     delta = 0
     T = 0
-    max_tps = 144
+    max_tps = 100
 
     clock = pygame.time.Clock()
 
@@ -240,6 +240,7 @@ def start_the_game():
         screen.fill((0,82,33))
         pygame.draw.rect(screen, (87,65,47), (0, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2) + 57, SCREEN_WIDTH, 100))
 
+        #moving obsługuje ruch jeża
         run = moving()
 
         #Ticking
