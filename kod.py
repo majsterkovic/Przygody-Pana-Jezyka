@@ -59,6 +59,11 @@ timeY = 42
 #gracz
 nick = ""
 
+def text_object(text, color, font):
+    textSurface = font.render(text, True, color)
+    return textSurface, textSurface.get_rect()
+
+
 def show_time(x, y, t):
     timee = font.render("Czas: " + str(t), True, (255,255,255))
     screen.blit(timee, (x, y))
@@ -156,6 +161,7 @@ def reset():
     global hedgehog_speed
     global hedgehog_mul
     global stone
+    global dead
 
     stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone.png"), [2.88], mixer.Sound('sounds/StoneHit.wav'))
 
@@ -167,6 +173,7 @@ def reset():
     hedgehog.X = (SCREEN_WIDTH - IMG_SIZE) / 2
     hedgehog_speed = 3.6
     hedgehog_mul = 1.0
+    hedgehog.change = 0
 
 
 def show(x, y, DANE, i):
@@ -176,7 +183,7 @@ def show(x, y, DANE, i):
     punkty = font.render( str(DANE[i][0]), True, (255,255,255))
 
     screen.blit(imie, (x, y+i*42))
-    screen.blit(punkty, (x+200, y+i*42)) 
+    screen.blit(punkty, (x+200, y+i*42))
 
 def moving():
     
@@ -207,6 +214,83 @@ def moving():
             
     return True
 
+def game_end(T):
+    global dead
+    global run
+    if score_val == 1 or dead == True:
+        your_time = round(T, 2)
+        reset()
+
+        #ekran pokazujący czas
+        while run:
+            if dead == False:
+                screen.fill((10,92,43))
+                timeSurf, timeRect = text_object("Twój czas: " + str(your_time), (255,255,255), pygame.font.Font('fonts/Lato-Bold.ttf', 64))
+                timeRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-96)
+                pressSurf, pressRect = text_object("Naciśnij spację, by zobaczyć tabelę wyników", (255,255,255), pygame.font.Font('fonts/Lato-Bold.ttf', 32))
+                pressRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2)
+                screen.blit(timeSurf, timeRect)
+                screen.blit(pressSurf, pressRect)
+                pygame.display.update()
+            else:
+                screen.fill((255,255,255))
+                obitSurf, obitRect = text_object("Umarłeś " + str(nick.get_value()), (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 128))
+                obitRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-96)
+                timeSurf, timeRect = text_object("Przeżyłeś: " + str(your_time) + " sekund", (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 64))
+                timeRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2+24)
+                pressSurf, pressRect = text_object("Naciśnij spację, by zobaczyć tabelę wyników", (0,0,0), pygame.font.Font('fonts/Lato-Bold.ttf', 32))
+                pressRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2+184)
+                screen.blit(obitSurf, obitRect)
+                screen.blit(timeSurf, timeRect)
+                screen.blit(pressSurf, pressRect)
+                pygame.display.update()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+
+                        highscores = []
+                        if dead == False:
+                            your_score = str(your_time) + " " + nick.get_value() + "\n"
+                            f = open("scores.txt", "a")
+                            f.write(your_score)
+                            f.close()
+                        f = open("scores.txt", "r")
+                        for line in f:
+                            x = line.split()
+                            x[0] = float(x[0])
+                            highscores.append(x)
+                        highscores.sort()
+
+                        #ekran pokazujący HS
+                        run = True
+                        while run:
+
+                            for event in pygame.event.get():
+
+                                    #zamykanie gry
+                                    if event.type == pygame.QUIT:
+                                        run = False
+
+                            screen.fill((0,82,33))
+                            # fontHS = pygame.font.Font('fonts/Lato-Black.ttf', 42)
+                            # screen.blit(fontHS.render("HIGHSCORES:", True, (235,235,235)), (390, 100))
+
+                            HSSurf, HSRect = text_object("HIGHSCORES:", (235,235,235), pygame.font.Font('fonts/Lato-Black.ttf', 64))
+                            HSRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-280)
+                            screen.blit(HSSurf, HSRect)
+
+                            for i in range(min(10, len(highscores))):
+                                show(401, 150, highscores, i)
+
+                            pygame.display.update()
+
+
+dead = False
+run = True
+
 def start_the_game():
 
     global hedgehog
@@ -218,11 +302,11 @@ def start_the_game():
     global pear
 
     global nick
-
+    global dead
     global score_val
     global counter
+    global run
 
-    dead = False
 
     delta = 0
     T = 0
@@ -233,6 +317,7 @@ def start_the_game():
     ready_pear = random.randint(460, 840)
 
     run = True
+    dead = False
 
     #pętla główna
     while run:
@@ -279,10 +364,6 @@ def start_the_game():
             for i in range(len(stone.X)):
                 if collision(stone, i):
                     stone.snd.play()
-                    screen.fill((255,255,255))
-                    obituary = font.render("Umarłes " + str(nick.get_value()), True, (0,0,0))
-                    screen.blit(obituary, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
-                    pygame.display.update()
                     dead = True
                     reset()
                     break   
@@ -316,62 +397,63 @@ def start_the_game():
             #pokazuj czas
             show_time(timeX, timeY, round(T, 2))
 
+            game_end(T)
 
             #koniec gry
-            if score_val == 30 or dead == True:
-                your_time = round(T, 2)
-                reset()
+            # if score_val == 30 or dead == True:
+            #     your_time = round(T, 2)
+            #     reset()
 
-                #ekran pokazujący czas
-                while run:
-                    screen.fill((10,92,43))
-                    show_time(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, round(T, 2))
-                    pygame.display.update()
-                    for event in pygame.event.get():
-                        if event.type == pygame.QUIT:
-                            run = False
+            #     #ekran pokazujący czas
+            #     while run:
+            #         screen.fill((10,92,43))
+            #         show_time(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, round(T, 2))
+            #         pygame.display.update()
+            #         for event in pygame.event.get():
+            #             if event.type == pygame.QUIT:
+            #                 run = False
 
 
-                        if event.type == pygame.KEYDOWN:
-                            if event.key == pygame.K_SPACE:
+            #             if event.type == pygame.KEYDOWN:
+            #                 if event.key == pygame.K_SPACE:
 
-                                highscores = []
-                                if dead == False:
-                                    your_score = str(your_time) + " " + nick.get_value() + "\n"
-                                    f = open("scores.txt", "a")
-                                    f.write(your_score)
-                                    f.close()
-                                f = open("scores.txt", "r")
-                                for line in f:
-                                    x = line.split()
-                                    x[0] = float(x[0])
-                                    highscores.append(x)
-                                highscores.sort()
+            #                     highscores = []
+            #                     if dead == False:
+            #                         your_score = str(your_time) + " " + nick.get_value() + "\n"
+            #                         f = open("scores.txt", "a")
+            #                         f.write(your_score)
+            #                         f.close()
+            #                     f = open("scores.txt", "r")
+            #                     for line in f:
+            #                         x = line.split()
+            #                         x[0] = float(x[0])
+            #                         highscores.append(x)
+            #                     highscores.sort()
 
-                                #ekran pokazujący HS
-                                run = True
-                                while run:
+            #                     #ekran pokazujący HS
+            #                     run = True
+            #                     while run:
 
-                                    for event in pygame.event.get():
+            #                         for event in pygame.event.get():
 
-                                            #zamykanie gry
-                                            if event.type == pygame.QUIT:
-                                                run = False
+            #                                 #zamykanie gry
+            #                                 if event.type == pygame.QUIT:
+            #                                     run = False
 
-                                    screen.fill((0,82,33))
-                                    fontHS = pygame.font.Font('fonts/Lato-Black.ttf', 42)
-                                    screen.blit(fontHS.render("HIGHSCORES:", True, (235,235,235)), (390, 100))
-                                    for i in range(min(10, len(highscores))):
-                                        show(390, 150, highscores, i)
+            #                         screen.fill((0,82,33))
+            #                         fontHS = pygame.font.Font('fonts/Lato-Black.ttf', 42)
+            #                         screen.blit(fontHS.render("HIGHSCORES:", True, (235,235,235)), (390, 100))
+            #                         for i in range(min(10, len(highscores))):
+            #                             show(390, 150, highscores, i)
 
-                                    pygame.display.update()
+            #                         pygame.display.update()
             pygame.display.update()
 
     pass
 
 #menu
 menu = pygame_menu.Menu(300, 400, 'Witaj', theme=pygame_menu.themes.THEME_BLUE)
-nick = menu.add_text_input('Imię: ', default='Jacus')
+nick = menu.add_text_input('Imię: ', default='Jacuś')
 menu.add_button('Graj', start_the_game)
 menu.add_button('Wyjdź', quit_the_game)
 menu.mainloop(screen, fps_limit=144)
