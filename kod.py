@@ -27,7 +27,7 @@ mixer.music.load('sounds/AutumnDay.mp3')
 mixer.music.play(-1)
 
 # wyświetlanie okna gry
-pygame.display.set_caption("Przygody Pana Jeżyka")
+pygame.display.set_caption("Mr. Hedgehog's Adventures")
 
 #zmiana ikony okna gry
 icon = pygame.image.load('images/hedgehog32.png')
@@ -78,11 +78,11 @@ def text_object(text, color, font):
 
 
 def show_time(x, y, t):
-    timee = font.render("Czas: " + str(t), True, (255,255,255))
+    timee = font.render("Time: " + str(t), True, (255,255,255))
     screen.blit(timee, (x, y))
 
 def show_score(x, y):
-    score = font.render("Wynik: " + str(score_val), True, (255,255,255))
+    score = font.render("Score: " + str(score_val), True, (255,255,255))
     screen.blit(score, (x, y))
 
 def hedgehog_move():
@@ -180,6 +180,7 @@ def reset():
     global pearImg
 
     stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load(stoneImg), [2.88], mixer.Sound('sounds/StoneHit.wav'))
+    apple.X = [random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)]
 
     counter = 0
     score_val = 0
@@ -215,25 +216,24 @@ def moving():
     
     global hedgehog
 
-    for event in pygame.event.get():
-
-        #klawisze
-        keys = pygame.key.get_pressed()
-        #zwraca stan klawiszy na klawiaturze jako wartość logiczną
-        if keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
-            hedgehog.change = 0
-        elif keys[pygame.K_RIGHT]:
-            hedgehog.change = hedgehog_speed * hedgehog_mul
-            hedgehog.Img = pygame.image.load(hedgehogRight)
-            screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
-        elif keys[pygame.K_LEFT]:
-            hedgehog.change = -1 * hedgehog_speed * hedgehog_mul
-            hedgehog.Img = pygame.image.load(hedgehogLeft)
-            screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
-        else:
-            hedgehog.change = 0
+    #klawisze
+    keys = pygame.key.get_pressed()
+    #zwraca stan klawiszy na klawiaturze jako wartość logiczną
+    if keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
+        hedgehog.change = 0
+    elif keys[pygame.K_RIGHT]:
+        hedgehog.change = hedgehog_speed * hedgehog_mul
+        hedgehog.Img = pygame.image.load(hedgehogRight)
+        screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
+    elif keys[pygame.K_LEFT]:
+        hedgehog.change = -1 * hedgehog_speed * hedgehog_mul
+        hedgehog.Img = pygame.image.load(hedgehogLeft)
+        screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
+    else:
+        hedgehog.change = 0
 
         #zamykanie gry
+    for event in pygame.event.get():
         if event.type == pygame.QUIT:
             reset()
             return False
@@ -251,20 +251,20 @@ def game_end(T):
         while run:
             if dead == False:
                 screen.fill((10,92,43))
-                timeSurf, timeRect = text_object("Twój czas: " + str(your_time), (255,255,255), pygame.font.Font('fonts/Lato-Bold.ttf', 64))
+                timeSurf, timeRect = text_object("Your Time: " + str(your_time), (255,255,255), pygame.font.Font('fonts/Lato-Bold.ttf', 64))
                 timeRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-96)
-                pressSurf, pressRect = text_object("Naciśnij spację, by zobaczyć tabelę wyników", (255,255,255), pygame.font.Font('fonts/Lato-Bold.ttf', 32))
+                pressSurf, pressRect = text_object("Press [space] to see highscores", (255,255,255), pygame.font.Font('fonts/Lato-Bold.ttf', 32))
                 pressRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2)
                 screen.blit(timeSurf, timeRect)
                 screen.blit(pressSurf, pressRect)
                 pygame.display.update()
             else:
                 screen.fill((255,255,255))
-                obitSurf, obitRect = text_object("Umarłeś " + str(nick.get_value()), (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 128))
+                obitSurf, obitRect = text_object("You are dead, " + str(nick.get_value()), (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 128))
                 obitRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-96)
-                timeSurf, timeRect = text_object("Przeżyłeś: " + str(your_time) + " sekundy", (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 64))
+                timeSurf, timeRect = text_object("You've lived for: " + str(your_time) + " seconds", (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 64))
                 timeRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2+24)
-                pressSurf, pressRect = text_object("Naciśnij spację, by zobaczyć tabelę wyników", (0,0,0), pygame.font.Font('fonts/Lato-Bold.ttf', 32))
+                pressSurf, pressRect = text_object("Press [space] to see highscores", (0,0,0), pygame.font.Font('fonts/Lato-Bold.ttf', 32))
                 pressRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2+184)
                 screen.blit(obitSurf, obitRect)
                 screen.blit(timeSurf, timeRect)
@@ -302,7 +302,7 @@ def game_end(T):
 
                             screen.fill((0,82,33))
 
-                            HSSurf, HSRect = text_object("TABELA WYNIKÓW:", (235,235,235), pygame.font.Font('fonts/Lato-Black.ttf', 64))
+                            HSSurf, HSRect = text_object("HIGHSCORES:", (235,235,235), pygame.font.Font('fonts/Lato-Black.ttf', 64))
                             HSRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-280)
                             screen.blit(HSSurf, HSRect)
 
@@ -312,17 +312,14 @@ def game_end(T):
                             pygame.display.update()
 
 
-dead = False
-run = True
-
 def raccoon():
     global hedgehogRight
     global hedgehogLeft
     global appleImg
     global pearImg
     global apple
-    global stone
     global pear
+    global hedgehog
 
     hedgehogRight = "images/raccoon.png"
     hedgehogLeft = "images/raccoon_rev.png"
@@ -331,6 +328,9 @@ def raccoon():
     hedgehog.Img = pygame.image.load(hedgehogRight)
     apple.Img = pygame.image.load(appleImg)
     pear.Img = pygame.image.load(pearImg)
+
+dead = False
+run = True
 
 def start_the_game():
 
@@ -347,10 +347,7 @@ def start_the_game():
     global score_val
     global counter
     global run
-    global hedgehogRight
-    global hedgehogLeft
-    global appleImg
-    global pearImg
+    
 
 
     delta = 0
@@ -375,7 +372,10 @@ def start_the_game():
         #moving obsługuje ruch jeża
         run = moving()
 
-        raccoon()
+        #egg
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_s] and keys[pygame.K_z] and keys[pygame.K_o] and keys[pygame.K_p]:
+            raccoon()
 
         #Ticking
         delta += clock.tick()/1000.0   
@@ -451,8 +451,8 @@ def start_the_game():
     pass
 
 #menu
-menu = pygame_menu.Menu(300, 400, 'Witaj', theme=pygame_menu.themes.THEME_BLUE)
-nick = menu.add_text_input('Imię: ', default='Jacuś')
-menu.add_button('Graj', start_the_game)
-menu.add_button('Wyjdź', quit_the_game)
+menu = pygame_menu.Menu(300, 400, 'Hello', theme=pygame_menu.themes.THEME_BLUE)
+nick = menu.add_text_input('Name: ', default='Jacuś')
+menu.add_button('Play', start_the_game)
+menu.add_button('Quit', quit_the_game)
 menu.mainloop(screen, fps_limit=100)
