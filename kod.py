@@ -41,7 +41,6 @@ pearImg = "images/pear.png"
 stoneImg = "images/stone.png"
 
 
-
 #gracz (jeż)
 hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load(hedgehogRight), 0, mixer.Sound('sounds/StoneHit.wav'))
 
@@ -243,7 +242,7 @@ def moving():
 def game_end(T):
     global dead
     global run
-    if score_val == 1 or dead == True:
+    if score_val == 45 or dead == True:
         your_time = round(T, 2)
         reset()
 
@@ -313,10 +312,12 @@ def game_end(T):
 
 
 def raccoon():
+    
     global hedgehogRight
     global hedgehogLeft
     global appleImg
     global pearImg
+
     global apple
     global pear
     global hedgehog
