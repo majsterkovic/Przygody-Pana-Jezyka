@@ -33,20 +33,29 @@ pygame.display.set_caption("Przygody Pana Jeżyka")
 icon = pygame.image.load('images/hedgehog32.png')
 pygame.display.set_icon(icon)
 
+#ikonki jako stringi
+hedgehogRight = "images/hedgehog.png"
+hedgehogLeft = "images/hedgehog_rev.png"
+appleImg = "images/apple.png"
+pearImg = "images/pear.png"
+stoneImg = "images/stone.png"
+
+
+
 #gracz (jeż)
-hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("images/hedgehog.png"), 0, mixer.Sound('sounds/StoneHit.wav'))
+hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load(hedgehogRight), 0, mixer.Sound('sounds/StoneHit.wav'))
 
 hedgehog_speed = 3.6
 hedgehog_mul = 1.0
 
 # jablko
-apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -310], pygame.image.load("images/apple.png"), [3.02, 2.74, 2.88], mixer.Sound('sounds/AppleBite.wav'))
+apple = item([random.randint(0, MAX_X), random.randint(0, MAX_X), random.randint(0, MAX_X)], [-110, -210, -310], pygame.image.load(appleImg), [3.02, 2.74, 2.88], mixer.Sound('sounds/AppleBite.wav'))
 
 # gruszka
-pear = item(random.randint(0, MAX_X), -10, pygame.image.load("images/pear.png"), 3.31, mixer.Sound('sounds/PearBite.wav'))
+pear = item(random.randint(0, MAX_X), -10, pygame.image.load(pearImg), 3.31, mixer.Sound('sounds/PearBite.wav'))
 
 #kamień
-stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone.png"), [2.88], mixer.Sound('sounds/StoneHit.wav'))
+stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load(stoneImg), [2.88], mixer.Sound('sounds/StoneHit.wav'))
 
 #wynik
 score_val = 0
@@ -127,7 +136,6 @@ def pear_move():
         pear.X = random.randint(0, MAX_X)
         counter = 0
         pear.Y = -10
-        print("Gruszka przeleciala")
 
 def draw(x, y, Img):
     screen.blit(Img, (x, y))
@@ -166,8 +174,12 @@ def reset():
     global hedgehog_mul
     global stone
     global dead
+    global hedgehogRight
+    global hedgehogLeft
+    global appleImg
+    global pearImg
 
-    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load("images/stone.png"), [2.88], mixer.Sound('sounds/StoneHit.wav'))
+    stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load(stoneImg), [2.88], mixer.Sound('sounds/StoneHit.wav'))
 
     counter = 0
     score_val = 0
@@ -178,6 +190,16 @@ def reset():
     hedgehog_speed = 3.6
     hedgehog_mul = 1.0
     hedgehog.change = 0
+
+    hedgehogRight = "images/hedgehog.png"
+    hedgehogLeft = "images/hedgehog_rev.png"
+    appleImg = "images/apple.png"
+    pearImg = "images/pear.png"
+
+    hedgehog.Img = pygame.image.load(hedgehogRight)
+    apple.Img = pygame.image.load(appleImg)
+    pear.Img = pygame.image.load(pearImg)
+
 
 
 def show(x, y, DANE, i):
@@ -202,11 +224,11 @@ def moving():
             hedgehog.change = 0
         elif keys[pygame.K_RIGHT]:
             hedgehog.change = hedgehog_speed * hedgehog_mul
-            hedgehog.Img = pygame.image.load("images/hedgehog.png")
+            hedgehog.Img = pygame.image.load(hedgehogRight)
             screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
         elif keys[pygame.K_LEFT]:
             hedgehog.change = -1 * hedgehog_speed * hedgehog_mul
-            hedgehog.Img = pygame.image.load("images/hedgehog_rev.png")
+            hedgehog.Img = pygame.image.load(hedgehogLeft)
             screen.blit(hedgehog.Img, (hedgehog.X, hedgehog.Y))
         else:
             hedgehog.change = 0
@@ -240,7 +262,7 @@ def game_end(T):
                 screen.fill((255,255,255))
                 obitSurf, obitRect = text_object("Umarłeś " + str(nick.get_value()), (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 128))
                 obitRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-96)
-                timeSurf, timeRect = text_object("Przeżyłeś: " + str(your_time) + " sekund", (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 64))
+                timeSurf, timeRect = text_object("Przeżyłeś: " + str(your_time) + " sekundy", (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 64))
                 timeRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2+24)
                 pressSurf, pressRect = text_object("Naciśnij spację, by zobaczyć tabelę wyników", (0,0,0), pygame.font.Font('fonts/Lato-Bold.ttf', 32))
                 pressRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2+184)
@@ -279,10 +301,8 @@ def game_end(T):
                                         run = False
 
                             screen.fill((0,82,33))
-                            # fontHS = pygame.font.Font('fonts/Lato-Black.ttf', 42)
-                            # screen.blit(fontHS.render("HIGHSCORES:", True, (235,235,235)), (390, 100))
 
-                            HSSurf, HSRect = text_object("HIGHSCORES:", (235,235,235), pygame.font.Font('fonts/Lato-Black.ttf', 64))
+                            HSSurf, HSRect = text_object("TABELA WYNIKÓW:", (235,235,235), pygame.font.Font('fonts/Lato-Black.ttf', 64))
                             HSRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-280)
                             screen.blit(HSSurf, HSRect)
 
@@ -294,6 +314,23 @@ def game_end(T):
 
 dead = False
 run = True
+
+def raccoon():
+    global hedgehogRight
+    global hedgehogLeft
+    global appleImg
+    global pearImg
+    global apple
+    global stone
+    global pear
+
+    hedgehogRight = "images/raccoon.png"
+    hedgehogLeft = "images/raccoon_rev.png"
+    appleImg = "images/laundry.png"
+    pearImg = "images/dishes.png"
+    hedgehog.Img = pygame.image.load(hedgehogRight)
+    apple.Img = pygame.image.load(appleImg)
+    pear.Img = pygame.image.load(pearImg)
 
 def start_the_game():
 
@@ -310,6 +347,10 @@ def start_the_game():
     global score_val
     global counter
     global run
+    global hedgehogRight
+    global hedgehogLeft
+    global appleImg
+    global pearImg
 
 
     delta = 0
@@ -323,6 +364,8 @@ def start_the_game():
     run = True
     dead = False
 
+    
+
     #pętla główna
     while run:
 
@@ -331,6 +374,8 @@ def start_the_game():
 
         #moving obsługuje ruch jeża
         run = moving()
+
+        raccoon()
 
         #Ticking
         delta += clock.tick()/1000.0   
@@ -377,7 +422,6 @@ def start_the_game():
                 pear.X = random.randint(0, MAX_X)
                 counter = 0
                 pear.Y = -10
-                print("Gruszka przeleciala")
 
             #wypuszczenie gruszki
             if counter == ready_pear:
@@ -394,7 +438,6 @@ def start_the_game():
                 pear.X = random.randint(0, MAX_X)
                 counter = 0
                 ready_pear = random.randint(460, 840)
-                print("Gruszka zjedzona")
 
             #pokazuj wynik
             show_score(textX, textY)
@@ -403,54 +446,6 @@ def start_the_game():
 
             game_end(T)
 
-            #koniec gry
-            # if score_val == 30 or dead == True:
-            #     your_time = round(T, 2)
-            #     reset()
-
-            #     #ekran pokazujący czas
-            #     while run:
-            #         screen.fill((10,92,43))
-            #         show_time(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, round(T, 2))
-            #         pygame.display.update()
-            #         for event in pygame.event.get():
-            #             if event.type == pygame.QUIT:
-            #                 run = False
-
-
-            #             if event.type == pygame.KEYDOWN:
-            #                 if event.key == pygame.K_SPACE:
-
-            #                     highscores = []
-            #                     if dead == False:
-            #                         your_score = str(your_time) + " " + nick.get_value() + "\n"
-            #                         f = open("scores.txt", "a")
-            #                         f.write(your_score)
-            #                         f.close()
-            #                     f = open("scores.txt", "r")
-            #                     for line in f:
-            #                         x = line.split()
-            #                         x[0] = float(x[0])
-            #                         highscores.append(x)
-            #                     highscores.sort()
-
-            #                     #ekran pokazujący HS
-            #                     run = True
-            #                     while run:
-
-            #                         for event in pygame.event.get():
-
-            #                                 #zamykanie gry
-            #                                 if event.type == pygame.QUIT:
-            #                                     run = False
-
-            #                         screen.fill((0,82,33))
-            #                         fontHS = pygame.font.Font('fonts/Lato-Black.ttf', 42)
-            #                         screen.blit(fontHS.render("HIGHSCORES:", True, (235,235,235)), (390, 100))
-            #                         for i in range(min(10, len(highscores))):
-            #                             show(390, 150, highscores, i)
-
-            #                         pygame.display.update()
             pygame.display.update()
 
     pass
