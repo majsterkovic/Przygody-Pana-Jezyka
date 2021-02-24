@@ -240,8 +240,10 @@ def moving():
     return True
 
 def game_end(T):
+
     global dead
     global run
+    
     if score_val == 45 or dead == True:
         your_time = round(T, 2)
         reset()
