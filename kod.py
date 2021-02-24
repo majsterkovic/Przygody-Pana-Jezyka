@@ -29,6 +29,10 @@ mixer.music.play(-1)
 # wyświetlanie okna gry
 pygame.display.set_caption("Przygody Pana Jeżyka")
 
+#zmiana ikony okna gry
+icon = pygame.image.load('images/hedgehog32.png')
+pygame.display.set_icon(icon)
+
 #gracz (jeż)
 hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load("images/hedgehog.png"), 0, mixer.Sound('sounds/StoneHit.wav'))
 
@@ -456,4 +460,4 @@ menu = pygame_menu.Menu(300, 400, 'Witaj', theme=pygame_menu.themes.THEME_BLUE)
 nick = menu.add_text_input('Imię: ', default='Jacuś')
 menu.add_button('Graj', start_the_game)
 menu.add_button('Wyjdź', quit_the_game)
-menu.mainloop(screen, fps_limit=144)
+menu.mainloop(screen, fps_limit=100)
