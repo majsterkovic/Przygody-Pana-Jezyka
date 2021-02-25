@@ -41,7 +41,6 @@ pearImg = "images/pear.png"
 stoneImg = "images/stone.png"
 
 
-
 #gracz (jeż)
 hedgehog = item( (SCREEN_WIDTH - IMG_SIZE) / 2, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2), pygame.image.load(hedgehogRight), 0, mixer.Sound('sounds/StoneHit.wav'))
 
@@ -161,7 +160,7 @@ def collision(item, i):
         return False
 
 def quit_the_game():
-    quit()
+    exit()
 
 def reset():
 
@@ -241,9 +240,11 @@ def moving():
     return True
 
 def game_end(T):
+
     global dead
     global run
-    if score_val == 1 or dead == True:
+    
+    if score_val == 45 or dead == True:
         your_time = round(T, 2)
         reset()
 
@@ -285,9 +286,10 @@ def game_end(T):
                             f.close()
                         f = open("scores.txt", "r")
                         for line in f:
-                            x = line.split()
-                            x[0] = float(x[0])
-                            highscores.append(x)
+                            if line != "\n":
+                                x = line.split()
+                                x[0] = float(x[0])
+                                highscores.append(x)
                         highscores.sort()
 
                         #ekran pokazujący HS
@@ -313,10 +315,12 @@ def game_end(T):
 
 
 def raccoon():
+    
     global hedgehogRight
     global hedgehogLeft
     global appleImg
     global pearImg
+
     global apple
     global pear
     global hedgehog
@@ -361,7 +365,6 @@ def start_the_game():
     run = True
     dead = False
 
-    
 
     #pętla główna
     while run:
@@ -450,8 +453,25 @@ def start_the_game():
 
     pass
 
+#menu theme
+mytheme = pygame_menu.themes.Theme(
+                title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_NONE,
+                background_color=(0,82,33),
+                title_background_color=(87,65,47),
+                widget_padding=25,
+                widget_font = 'fonts/Lato-Regular.ttf',
+                widget_font_size = 64,
+                title_font = 'fonts/Lato-Bold.ttf',
+                title_font_size = 72,
+                title_offset = (92, 32),
+                title_font_color = (246, 159, 49),
+                title_font_antialias = True,
+                widget_font_antialias = True,
+                widget_font_color = (246, 159, 49))
+
+
 #menu
-menu = pygame_menu.Menu(300, 400, 'Hello', theme=pygame_menu.themes.THEME_BLUE)
+menu = pygame_menu.Menu(720, 1080, 'Mr. Hedgehog\'s Adventures', theme=mytheme)
 nick = menu.add_text_input('Name: ', default='Jacuś')
 menu.add_button('Play', start_the_game)
 menu.add_button('Quit', quit_the_game)
