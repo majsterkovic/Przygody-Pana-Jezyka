@@ -2,6 +2,7 @@ import pygame
 import random
 import pygame_menu
 import time
+import os
 from math import sqrt
 from pygame import mixer
 from pygame_menu import sound
@@ -244,7 +245,7 @@ def game_end(T):
     global dead
     global run
     
-    if score_val == 45 or dead == True:
+    if score_val == 1 or dead == True:
         your_time = round(T, 2)
         reset()
 
@@ -279,14 +280,15 @@ def game_end(T):
                     if event.key == pygame.K_SPACE:
 
                         highscores = []
+                        path = str(os.path.expanduser('~\Documents\My Games\MrHedgehogsAdventures')) + "\scores.txt"
                         if dead == False:
                             your_score = str(your_time) + " " + nick.get_value() + "\n"
-                            f = open("scores.txt", "a")
+                            f = open(path, "a")
                             f.write(your_score)
                             f.close()
-                        f = open("scores.txt", "r")
+                        f = open(path, "r")
                         for line in f:
-                            if line != "\n":
+                            if line != "HIGHSCORES\n":
                                 x = line.split()
                                 x[0] = float(x[0])
                                 highscores.append(x)
