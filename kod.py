@@ -2,12 +2,12 @@ import pygame
 import random
 import pygame_menu
 import time
-import os
 from math import sqrt
 from pygame import mixer
 from pygame_menu import sound
 
 from classes import item
+
 
 pygame.init()
 counter = 0
@@ -280,13 +280,13 @@ def game_end(T):
                     if event.key == pygame.K_SPACE:
 
                         highscores = []
-                        path = str(os.path.expanduser('~\Documents\My Games\MrHedgehogsAdventures')) + "\scores.txt"
+                        #path = str(os.path.expanduser('~\Documents\My Games\MrHedgehogsAdventures')) + "\scores.txt"
                         if dead == False:
                             your_score = str(your_time) + " " + nick.get_value() + "\n"
-                            f = open(path, "a")
+                            f = open("scores.txt", "a")
                             f.write(your_score)
                             f.close()
-                        f = open(path, "r")
+                        f = open("scores.txt", "r")
                         for line in f:
                             if line != "HIGHSCORES\n":
                                 x = line.split()
