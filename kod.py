@@ -283,10 +283,10 @@ def game_end(T):
                         #path = str(os.path.expanduser('~\Documents\My Games\MrHedgehogsAdventures')) + "\scores.txt"
                         if dead == False:
                             your_score = str(your_time) + " " + nick.get_value() + "\n"
-                            f = open("scores.txt", "a")
+                            f = open("scores", "a")
                             f.write(your_score)
                             f.close()
-                        f = open("scores.txt", "r")
+                        f = open("scores", "r")
                         for line in f:
                             if line != "HIGHSCORES\n":
                                 x = line.split()
