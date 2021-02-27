@@ -62,9 +62,16 @@ score_val = 0
 
 #czcionka
 LATO_BOLD_32 = pygame.font.Font('fonts/Lato-Bold.ttf', 32)
+LATO_BOLD_64 = pygame.font.Font('fonts/Lato-Bold.ttf', 64)
+LATO_REG_32 = pygame.font.Font('fonts/Lato-Regular.ttf', 32)
+FONT_GOTIC_128 = pygame.font.Font('fonts/Antraxja-Gothic.ttf', 128)
+FONT_GOTIC_64 = pygame.font.Font('fonts/Antraxja-Gothic.ttf', 64)
 
-textX = 5
-textY = 5
+#kolory
+WHITE = (255,255,255)
+BLACK = (0,0,0)
+MAIN_GREEN = (0,82,33)
+
 
 #gracz
 nick = ""
@@ -202,10 +209,9 @@ def reset():
 
 
 def show(x, y, DANE, i):
-    font = pygame.font.Font('fonts/Lato-Regular.ttf', 32)
 
-    imie = font.render(str(i+1) + "." + " " + str(DANE[i][1]), True, (255,255,255))
-    punkty = font.render( str(DANE[i][0]), True, (255,255,255))
+    imie = LATO_REG_32.render(str(i+1) + "." + " " + str(DANE[i][1]), True, WHITE)
+    punkty = LATO_REG_32.render( str(DANE[i][0]), True, WHITE)
 
     screen.blit(imie, (x, y+i*42))
     screen.blit(punkty, (x+200, y+i*42))
@@ -247,11 +253,6 @@ def game_end(T):
         your_time = round(T, 2)
         reset()
 
-        WHITE = (255, 255, 255)
-
-        FONT_GOTIC_128 = pygame.font.Font('fonts/Antraxja-Gothic.ttf', 128)
-        FONT_GOTIC_64 = pygame.font.Font('fonts/Antraxja-Gothic.ttf', 64)
-        BLACK = (0,0,0)
         name = nick.get_value()
 
         if dead == False:
@@ -260,7 +261,7 @@ def game_end(T):
             msg("Press [space] to see highscores", WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
         else:
-            screen.fill((255,255,255))
+            screen.fill(WHITE)
             msg("You are dead, " + str(name), BLACK, FONT_GOTIC_128, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
             msg("You've lived for: " + str(your_time) + " seconds", BLACK, FONT_GOTIC_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+24)
             msg("Press [space] to see highscores", BLACK, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+184)
@@ -301,11 +302,9 @@ def game_end(T):
                                     if event.type == pygame.QUIT:
                                         run = False
 
-                            screen.fill((0,82,33))
+                            screen.fill(MAIN_GREEN)
 
-                            HSSurf, HSRect = text_object("HIGHSCORES:", (235,235,235), pygame.font.Font('fonts/Lato-Bold.ttf', 64))
-                            HSRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-280)
-                            screen.blit(HSSurf, HSRect)
+                            msg("HIGHSCORES:", (235,235,235), LATO_BOLD_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-280)
 
                             for i in range(min(10, len(highscores))):
                                 show(401, 150, highscores, i)
@@ -334,18 +333,15 @@ def raccoon():
 
 def rules():
     a = True
-    WHITE = (255,255,255)
-    LATO_REG = pygame.font.Font('fonts/Lato-Regular.ttf', 32)
     
-
     screen.fill((10,92,43))
     msg("Welcome, " + str(nick.get_value()) + "!", WHITE, pygame.font.Font('fonts/Lato-Bold.ttf', 96), SCREEN_WIDTH/2, SCREEN_HEIGHT/2-200)
-    msg("In this game you will guide Mr. Hedgehog", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
-    msg("by using left and right arrows.", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-52)
-    msg("You have to help him collect apples.", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-8)
-    msg("He needs 45 of them to give to all his friends.", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+36)
-    msg("Sweet pears give him energy to walk faster.", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+80)
-    msg("But be careful, stones might hurt him!", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+124)
+    msg("In this game you will guide Mr. Hedgehog", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
+    msg("by using left and right arrows.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-52)
+    msg("You have to help him collect apples.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-8)
+    msg("He needs 45 of them to give to all his friends.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+36)
+    msg("Sweet pears give him energy to walk faster.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+80)
+    msg("But be careful, stones might hurt him!", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+124)
     msg("Press [space] to play the game", WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+220)
     draw(SCREEN_WIDTH-220, SCREEN_HEIGHT-60, pygame.image.load(hedgehogLeft))
     pygame.display.update()
@@ -392,11 +388,13 @@ def start_the_game():
     run = True
     dead = False
 
+    
 
     #pętla główna
     while run:
 
-        screen.fill((0,82,33))
+        screen.fill(MAIN_GREEN)
+        
         pygame.draw.rect(screen, (87,65,47), (0, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2) + 57, SCREEN_WIDTH, 100))
 
         #moving obsługuje ruch jeża
@@ -481,7 +479,7 @@ def start_the_game():
 #menu theme
 mytheme = pygame_menu.themes.Theme(
                 title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_NONE,
-                background_color=(0,82,33),
+                background_color=MAIN_GREEN,
                 title_background_color=(87,65,47),
                 widget_padding=25,
                 widget_font = 'fonts/Lato-Regular.ttf',
