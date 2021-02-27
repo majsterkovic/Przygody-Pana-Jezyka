@@ -61,16 +61,14 @@ stone = item([random.randint(0, MAX_X)], [-400], pygame.image.load(stoneImg), [2
 score_val = 0
 
 #czcionka
-font = pygame.font.Font('fonts/Lato-Bold.ttf', 32)
+LATO_BOLD_32 = pygame.font.Font('fonts/Lato-Bold.ttf', 32)
 
 textX = 5
 textY = 5
 
-timeX = 5
-timeY = 42
-
 #gracz
 nick = ""
+
 
 def text_object(string, color, font):
     textSurface = font.render(string, True, color)
@@ -81,13 +79,9 @@ def msg(string, color, font, x, y):
     I.Rect.center = (x), (y)
     screen.blit(I.Surf, I.Rect)
 
-def show_time(x, y, t):
-    timee = font.render("Time: " + str(t), True, (255,255,255))
-    screen.blit(timee, (x, y))
-
-def show_score(x, y):
-    score = font.render("Score: " + str(score_val), True, (255,255,255))
-    screen.blit(score, (x, y))
+def statistics(x, y, string):
+    I = LATO_BOLD_32.render(string, True, (255,255,255))
+    screen.blit(I, (x, y))
 
 def hedgehog_move():
 
@@ -112,9 +106,9 @@ def apple_move():
             apple.Y[i] = -10 + (i * -100)
             item_m(apple.X, apple.Y, apple.change, i, apple)
 
-def item_m(X, Y, C, i,item):
+def item_m(X, Y, C, i, itm):
 
-    draw(X[i], Y[i], item.Img)
+    draw(X[i], Y[i], itm.Img)
     Y[i] += C[i]
 
 def stone_move():
@@ -249,12 +243,12 @@ def game_end(T):
     global dead
     global run
     
-    if score_val == 1 or dead == True:
+    if score_val == 3 or dead == True:
         your_time = round(T, 2)
         reset()
 
         WHITE = (255, 255, 255)
-        FONT_LATO = pygame.font.Font('fonts/Lato-Bold.ttf', 32)
+
         FONT_GOTIC_128 = pygame.font.Font('fonts/Antraxja-Gothic.ttf', 128)
         FONT_GOTIC_64 = pygame.font.Font('fonts/Antraxja-Gothic.ttf', 64)
         BLACK = (0,0,0)
@@ -262,14 +256,14 @@ def game_end(T):
 
         if dead == False:
             screen.fill((10,92,43))
-            msg("Your Time: " + str(your_time), WHITE, FONT_LATO, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
-            msg("Press [space] to see highscores", WHITE, FONT_LATO, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+            msg("Your Time: " + str(your_time), WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
+            msg("Press [space] to see highscores", WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
         else:
             screen.fill((255,255,255))
             msg("You are dead, " + str(name), BLACK, FONT_GOTIC_128, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
             msg("You've lived for: " + str(your_time) + " seconds", BLACK, FONT_GOTIC_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+24)
-            msg("Press [space] to see highscores", BLACK, FONT_LATO, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+184)
+            msg("Press [space] to see highscores", BLACK, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+184)
 
         pygame.display.flip()
 
@@ -309,7 +303,7 @@ def game_end(T):
 
                             screen.fill((0,82,33))
 
-                            HSSurf, HSRect = text_object("HIGHSCORES:", (235,235,235), pygame.font.Font('fonts/Lato-Black.ttf', 64))
+                            HSSurf, HSRect = text_object("HIGHSCORES:", (235,235,235), pygame.font.Font('fonts/Lato-Bold.ttf', 64))
                             HSRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-280)
                             screen.blit(HSSurf, HSRect)
 
@@ -342,6 +336,7 @@ def rules():
     a = True
     WHITE = (255,255,255)
     LATO_REG = pygame.font.Font('fonts/Lato-Regular.ttf', 32)
+    
 
     screen.fill((10,92,43))
     msg("Welcome, " + str(nick.get_value()) + "!", WHITE, pygame.font.Font('fonts/Lato-Bold.ttf', 96), SCREEN_WIDTH/2, SCREEN_HEIGHT/2-200)
@@ -351,7 +346,7 @@ def rules():
     msg("He needs 45 of them to give to all his friends.", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+36)
     msg("Sweet pears give him energy to walk faster.", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+80)
     msg("But be careful, stones might hurt him!", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+124)
-    msg("Press [space] to play the game", WHITE, pygame.font.Font('fonts/Lato-Bold.ttf', 32), SCREEN_WIDTH/2, SCREEN_HEIGHT/2+220)
+    msg("Press [space] to play the game", WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+220)
     draw(SCREEN_WIDTH-220, SCREEN_HEIGHT-60, pygame.image.load(hedgehogLeft))
     pygame.display.update()
 
@@ -475,9 +470,9 @@ def start_the_game():
                 ready_pear = random.randint(460, 840)
 
             #pokazuj wynik
-            show_score(textX, textY)
+            statistics(5, 5, "Score: " + str(score_val))
             #pokazuj czas
-            show_time(timeX, timeY, round(T, 2))
+            statistics(5, 42, "Time: " + str(round(T, 2)))
 
             game_end(T)
 
