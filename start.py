@@ -72,7 +72,6 @@ WHITE = (255,255,255)
 BLACK = (0,0,0)
 MAIN_GREEN = (0,82,33)
 
-
 #gracz
 nick = ""
 
@@ -87,7 +86,7 @@ def msg(string, color, font, x, y):
     screen.blit(I.Surf, I.Rect)
 
 def statistics(x, y, string):
-    I = LATO_BOLD_32.render(string, True, (255,255,255))
+    I = LATO_BOLD_32.render(string, True, WHITE)
     screen.blit(I, (x, y))
 
 def hedgehog_move():
@@ -207,7 +206,6 @@ def reset():
     pear.Img = pygame.image.load(pearImg)
 
 
-
 def show(x, y, DANE, i):
 
     imie = LATO_REG_32.render(str(i+1) + "." + " " + str(DANE[i][1]), True, WHITE)
@@ -257,7 +255,7 @@ def game_end(T):
 
         if dead == False:
             screen.fill((10,92,43))
-            msg("Your Time: " + str(your_time), WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
+            msg("Your Time: " + str(your_time), WHITE, LATO_BOLD_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
             msg("Press [space] to see highscores", WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
         else:
