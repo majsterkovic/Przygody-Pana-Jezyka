@@ -6,7 +6,7 @@ from math import sqrt
 from pygame import mixer
 from pygame_menu import sound
 
-from classes import item
+from classes import item, text
 
 
 pygame.init()
@@ -72,10 +72,14 @@ timeY = 42
 #gracz
 nick = ""
 
-def text_object(text, color, font):
-    textSurface = font.render(text, True, color)
+def text_object(string, color, font):
+    textSurface = font.render(string, True, color)
     return textSurface, textSurface.get_rect()
 
+def msg(string, color, font, x, y):
+    I = text(text_object(string, color, font))
+    I.Rect.center = (x), (y)
+    screen.blit(I.Surf, I.Rect)
 
 def show_time(x, y, t):
     timee = font.render("Time: " + str(t), True, (255,255,255))
@@ -249,29 +253,28 @@ def game_end(T):
         your_time = round(T, 2)
         reset()
 
+        WHITE = (255, 255, 255)
+        FONT_LATO = pygame.font.Font('fonts/Lato-Bold.ttf', 32)
+        FONT_GOTIC_128 = pygame.font.Font('fonts/Antraxja-Gothic.ttf', 128)
+        FONT_GOTIC_64 = pygame.font.Font('fonts/Antraxja-Gothic.ttf', 64)
+        BLACK = (0,0,0)
+        name = nick.get_value()
+
+        if dead == False:
+            screen.fill((10,92,43))
+            msg("Your Time: " + str(your_time), WHITE, FONT_LATO, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
+            msg("Press [space] to see highscores", WHITE, FONT_LATO, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+
+        else:
+            screen.fill((255,255,255))
+            msg("You are dead, " + str(name), BLACK, FONT_GOTIC_128, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
+            msg("You've lived for: " + str(your_time) + " seconds", BLACK, FONT_GOTIC_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+24)
+            msg("Press [space] to see highscores", BLACK, FONT_LATO, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+184)
+
+        pygame.display.flip()
+
         #ekran pokazujący czas
         while run:
-            if dead == False:
-                screen.fill((10,92,43))
-                timeSurf, timeRect = text_object("Your Time: " + str(your_time), (255,255,255), pygame.font.Font('fonts/Lato-Bold.ttf', 64))
-                timeRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-96)
-                pressSurf, pressRect = text_object("Press [space] to see highscores", (255,255,255), pygame.font.Font('fonts/Lato-Bold.ttf', 32))
-                pressRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2)
-                screen.blit(timeSurf, timeRect)
-                screen.blit(pressSurf, pressRect)
-                pygame.display.update()
-            else:
-                screen.fill((255,255,255))
-                obitSurf, obitRect = text_object("You are dead, " + str(nick.get_value()), (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 128))
-                obitRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2-96)
-                timeSurf, timeRect = text_object("You've lived for: " + str(your_time) + " seconds", (0,0,0), pygame.font.Font('fonts/Antraxja-Gothic.ttf', 64))
-                timeRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2+24)
-                pressSurf, pressRect = text_object("Press [space] to see highscores", (0,0,0), pygame.font.Font('fonts/Lato-Bold.ttf', 32))
-                pressRect.center = (SCREEN_WIDTH/2), (SCREEN_HEIGHT/2+184)
-                screen.blit(obitSurf, obitRect)
-                screen.blit(timeSurf, timeRect)
-                screen.blit(pressSurf, pressRect)
-                pygame.display.update()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -334,6 +337,33 @@ def raccoon():
     hedgehog.Img = pygame.image.load(hedgehogRight)
     apple.Img = pygame.image.load(appleImg)
     pear.Img = pygame.image.load(pearImg)
+
+def rules():
+    a = True
+    WHITE = (255,255,255)
+    LATO_REG = pygame.font.Font('fonts/Lato-Regular.ttf', 32)
+
+    screen.fill((10,92,43))
+    msg("Welcome, " + str(nick.get_value()) + "!", WHITE, pygame.font.Font('fonts/Lato-Bold.ttf', 96), SCREEN_WIDTH/2, SCREEN_HEIGHT/2-200)
+    msg("In this game you will guide Mr. Hedgehog", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
+    msg("by using left and right arrows.", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-52)
+    msg("You have to help him collect apples.", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-8)
+    msg("He needs 45 of them to give to all his friends.", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+36)
+    msg("Sweet pears give him energy to walk faster.", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+80)
+    msg("But be careful, stones might hurt him!", WHITE, LATO_REG, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+124)
+    msg("Press [space] to play the game", WHITE, pygame.font.Font('fonts/Lato-Bold.ttf', 32), SCREEN_WIDTH/2, SCREEN_HEIGHT/2+220)
+    draw(SCREEN_WIDTH-220, SCREEN_HEIGHT-60, pygame.image.load(hedgehogLeft))
+    pygame.display.update()
+
+    while a:
+    
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                a = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    a = False
+                    start_the_game()
 
 dead = False
 run = True
@@ -453,8 +483,6 @@ def start_the_game():
 
             pygame.display.update()
 
-    pass
-
 #menu theme
 mytheme = pygame_menu.themes.Theme(
                 title_bar_style = pygame_menu.widgets.MENUBAR_STYLE_NONE,
@@ -475,6 +503,6 @@ mytheme = pygame_menu.themes.Theme(
 #menu
 menu = pygame_menu.Menu(720, 1080, 'Mr. Hedgehog\'s Adventures', theme=mytheme)
 nick = menu.add_text_input('Name: ', default='Jacuś')
-menu.add_button('Play', start_the_game)
+menu.add_button('Play', rules)
 menu.add_button('Quit', quit_the_game)
 menu.mainloop(screen, fps_limit=100)
