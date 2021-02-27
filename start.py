@@ -6,7 +6,7 @@ from math import sqrt
 from pygame import mixer
 from pygame_menu import sound
 
-from classes import item, text
+from classes import item
 
 
 pygame.init()
@@ -75,15 +75,22 @@ MAIN_GREEN = (0,82,33)
 #gracz
 nick = ""
 
+class Send:   
+    def __init__(self):
+        pass
 
-def text_object(string, color, font):
-    textSurface = font.render(string, True, color)
-    return textSurface, textSurface.get_rect()
+    def msg(self, string, color, font, x, y):
+        self.string = string
+        self.color = color
+        self.font = font
+        self.x = x
+        self.y = y
 
-def msg(string, color, font, x, y):
-    I = text(text_object(string, color, font))
-    I.Rect.center = (x), (y)
-    screen.blit(I.Surf, I.Rect)
+        textSurface = self.font.render(self.string, True, self.color)
+        textSurf, textRect = textSurface, textSurface.get_rect(center=(self.x, self.y))
+        screen.blit(textSurf, textRect)
+
+send = Send()
 
 def statistics(x, y, string):
     I = LATO_BOLD_32.render(string, True, WHITE)
@@ -255,14 +262,14 @@ def game_end(T):
 
         if dead == False:
             screen.fill((10,92,43))
-            msg("Your Time: " + str(your_time), WHITE, LATO_BOLD_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
-            msg("Press [space] to see highscores", WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+            send.msg("Your Time: " + str(your_time), WHITE, LATO_BOLD_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
+            send.msg("Press [space] to see highscores", WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
         else:
             screen.fill(WHITE)
-            msg("You are dead, " + str(name), BLACK, FONT_GOTIC_128, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
-            msg("You've lived for: " + str(your_time) + " seconds", BLACK, FONT_GOTIC_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+24)
-            msg("Press [space] to see highscores", BLACK, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+184)
+            send.msg("You are dead, " + str(name), BLACK, FONT_GOTIC_128, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
+            send.msg("You've lived for: " + str(your_time) + " seconds", BLACK, FONT_GOTIC_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+24)
+            send.msg("Press [space] to see highscores", BLACK, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+184)
 
         pygame.display.flip()
 
@@ -302,7 +309,7 @@ def game_end(T):
 
                             screen.fill(MAIN_GREEN)
 
-                            msg("HIGHSCORES:", (235,235,235), LATO_BOLD_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-280)
+                            send.msg("HIGHSCORES:", (235,235,235), LATO_BOLD_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-280)
 
                             for i in range(min(10, len(highscores))):
                                 show(401, 150, highscores, i)
@@ -333,14 +340,14 @@ def rules():
     a = True
     
     screen.fill((10,92,43))
-    msg("Welcome, " + str(nick.get_value()) + "!", WHITE, pygame.font.Font('fonts/Lato-Bold.ttf', 96), SCREEN_WIDTH/2, SCREEN_HEIGHT/2-200)
-    msg("In this game you will guide Mr. Hedgehog", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
-    msg("by using left and right arrows.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-52)
-    msg("You have to help him collect apples.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-8)
-    msg("He needs 45 of them to give to all his friends.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+36)
-    msg("Sweet pears give him energy to walk faster.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+80)
-    msg("But be careful, stones might hurt him!", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+124)
-    msg("Press [space] to play the game", WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+220)
+    send.msg("Welcome, " + str(nick.get_value()) + "!", WHITE, pygame.font.Font('fonts/Lato-Bold.ttf', 96), SCREEN_WIDTH/2, SCREEN_HEIGHT/2-200)
+    send.msg("In this game you will guide Mr. Hedgehog", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-96)
+    send.msg("by using left and right arrows.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-52)
+    send.msg("You have to help him collect apples.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-8)
+    send.msg("He needs 45 of them to give to all his friends.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+36)
+    send.msg("Sweet pears give him energy to walk faster.", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+80)
+    send.msg("But be careful, stones might hurt him!", WHITE, LATO_REG_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+124)
+    send.msg("Press [space] to play the game", WHITE, LATO_BOLD_32, SCREEN_WIDTH/2, SCREEN_HEIGHT/2+220)
     draw(SCREEN_WIDTH-220, SCREEN_HEIGHT-60, pygame.image.load(hedgehogLeft))
     pygame.display.update()
 
