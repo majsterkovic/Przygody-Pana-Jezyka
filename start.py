@@ -6,7 +6,7 @@ from math import sqrt
 from pygame import mixer
 from pygame_menu import sound
 
-from classes import item
+from itemize import item
 
 
 pygame.init()
@@ -38,7 +38,7 @@ pygame.display.set_icon(icon)
 hedgehogRight = "images/hedgehog.png"
 hedgehogLeft = "images/hedgehog_rev.png"
 appleImg = "images/apple.png"
-pearImg = "images/pear.png"
+pearImg = "images/pear"
 stoneImg = "images/stone.png"
 
 
@@ -206,7 +206,7 @@ def reset():
     hedgehogRight = "images/hedgehog.png"
     hedgehogLeft = "images/hedgehog_rev.png"
     appleImg = "images/apple.png"
-    pearImg = "images/pear.png"
+    pearImg = "images/pear"
 
     hedgehog.Img = pygame.image.load(hedgehogRight)
     apple.Img = pygame.image.load(appleImg)
@@ -297,24 +297,19 @@ def game_end(T):
                                 highscores.append(x)
                         highscores.sort()
 
+                        screen.fill(MAIN_GREEN)
+                        send.msg("HIGHSCORES:", (235,235,235), LATO_BOLD_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-280)
+                        for i in range(min(10, len(highscores))):
+                            show(401, 150, highscores, i)
+                        pygame.display.flip()
+
                         #ekran pokazujący HS
                         run = True
                         while run:
-
                             for event in pygame.event.get():
-
-                                    #zamykanie gry
-                                    if event.type == pygame.QUIT:
-                                        run = False
-
-                            screen.fill(MAIN_GREEN)
-
-                            send.msg("HIGHSCORES:", (235,235,235), LATO_BOLD_64, SCREEN_WIDTH/2, SCREEN_HEIGHT/2-280)
-
-                            for i in range(min(10, len(highscores))):
-                                show(401, 150, highscores, i)
-
-                            pygame.display.update()
+                                #zamykanie gry
+                                if event.type == pygame.QUIT:
+                                    run = False                
 
 
 def raccoon():
@@ -379,8 +374,6 @@ def start_the_game():
     global score_val
     global counter
     global run
-    
-
 
     delta = 0
     T = 0
@@ -393,13 +386,11 @@ def start_the_game():
     run = True
     dead = False
 
-    
-
     #pętla główna
     while run:
 
         screen.fill(MAIN_GREEN)
-        
+        #ziemia/drewno
         pygame.draw.rect(screen, (87,65,47), (0, SCREEN_HEIGHT - 120 - (IMG_SIZE / 2) + 57, SCREEN_WIDTH, 100))
 
         #moving obsługuje ruch jeża
@@ -433,7 +424,6 @@ def start_the_game():
                 stone.X.append(random.randint(0, MAX_X))
                 stone.Y.append(-400)
                 stone.change.append(2.0)
-
 
             #zjadanie jablka
             for i in range(3):
@@ -477,9 +467,11 @@ def start_the_game():
             #pokazuj czas
             statistics(5, 42, "Time: " + str(round(T, 2)))
 
+            #napisy końcowe
             game_end(T)
 
             pygame.display.update()
+
 
 #menu theme
 mytheme = pygame_menu.themes.Theme(
@@ -496,7 +488,6 @@ mytheme = pygame_menu.themes.Theme(
                 title_font_antialias = True,
                 widget_font_antialias = True,
                 widget_font_color = (246, 159, 49))
-
 
 #menu
 menu = pygame_menu.Menu(720, 1080, 'Mr. Hedgehog\'s Adventures', theme=mytheme)
