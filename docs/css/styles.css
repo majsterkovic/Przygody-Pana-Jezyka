@@ -6,3 +6,15 @@
 body {
     font-family: 'Cascadia', monospace;
 }
+
+#hedgehog {
+    width: 32px;
+    height: 32px;
+    transition-duration: 2s;
+  }
+  
+#hedgehog:hover {
+    width: 64px;
+    height: 64px;
+    transform: rotate(360deg);
+  }
