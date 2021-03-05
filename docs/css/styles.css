@@ -1,5 +1,8 @@
-@import url('CascadiaCode-Regular.ttf');
+@font-face {
+    font-family: Cascadia;
+    src: url('CascadiaCode-SemiLight.ttf');
+  } 
 
 body {
-    font-family: 'Cascadia Code', monospace;
+    font-family: 'Cascadia', monospace;
 }
